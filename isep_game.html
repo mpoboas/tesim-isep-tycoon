@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+	ISEP Tycoon - Adobe Animate HTML5 Canvas
+	Inclui lógica de jogo via game_logic.js
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="authoring-tool" content="Adobe_Animate_CC">
+<title>ISEP Tycoon</title>
+<!-- CreateJS Library -->
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<!-- Adobe Animate Export -->
+<script src="isep_game.js?1765054520519"></script>
+<!-- Game Logic -->
+<script src="game_logic.js"></script>
+<script>
+var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+
+function init() {
+	canvas = document.getElementById("canvas");
+	anim_container = document.getElementById("animation_container");
+	dom_overlay_container = document.getElementById("dom_overlay_container");
+	var comp = AdobeAn.getComposition("C4EE32689A47AB45842BDB0D0E7EC980");
+	var lib = comp.getLibrary();
+	var loader = new createjs.LoadQueue(false);
+	loader.addEventListener("fileload", function(evt){ handleFileLoad(evt, comp) });
+	loader.addEventListener("complete", function(evt){ handleComplete(evt, comp) });
+	loader.loadManifest(lib.properties.manifest);
+}
+
+function handleFileLoad(evt, comp) {
+	var images = comp.getImages();	
+	if (evt && (evt.item.type == "image")) { 
+		images[evt.item.id] = evt.result; 
+	}	
+}
+
+function handleComplete(evt, comp) {
+	// This function is always called, irrespective of the content.
+	var lib = comp.getLibrary();
+	var ss = comp.getSpriteSheet();
+	var queue = evt.target;
+	var ssMetadata = lib.ssMetadata;
+	
+	for(var i = 0; i < ssMetadata.length; i++) {
+		ss[ssMetadata[i].name] = new createjs.SpriteSheet({
+			"images": [queue.getResult(ssMetadata[i].name)], 
+			"frames": ssMetadata[i].frames
+		});
+	}
+	
+	exportRoot = new lib.isep_game();
+	stage = new lib.Stage(canvas);
+	
+	// =========================================================
+	// IMPORTANTE: Ativar deteção de mouseover (hover)
+	// O número 20 é a frequência de verificação (vezes por segundo)
+	// Sem isto, os eventos "mouseover" e "mouseout" NÃO funcionam!
+	// =========================================================
+	stage.enableMouseOver(20);
+	
+	// Registers the "tick" event listener.
+	fnStartAnimation = function() {
+		stage.addChild(exportRoot);
+		createjs.Ticker.framerate = lib.properties.fps;
+		createjs.Ticker.addEventListener("tick", stage);
+	}
+	
+	// Code to support hidpi screens and responsive scaling.
+	AdobeAn.makeResponsive(false, 'both', false, 1, [canvas, anim_container, dom_overlay_container]);
+	AdobeAn.compositionLoaded(lib.properties.id);
+	fnStartAnimation();
+	
+	// ========================================
+	// INICIALIZAR O JOGO APÓS O STAGE ESTAR PRONTO
+	// ========================================
+	initGame();
+}
+</script>
+</head>
+<body onload="init();" style="margin:0px;">
+	<div id="animation_container" style="background-color:rgba(255, 255, 255, 1.00); width:1920px; height:1080px">
+		<canvas id="canvas" width="1920" height="1080" style="position: absolute; display: block; background-color:rgba(255, 255, 255, 1.00);"></canvas>
+		<div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:1920px; height:1080px; position: absolute; left: 0px; top: 0px; display: block;">
+		</div>
+	</div>
+</body>
+</html>
