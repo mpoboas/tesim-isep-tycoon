@@ -131,196 +131,196 @@
     },
     "c_mc": {
         "title": "Edifício C",
-        "unlock_cost": 180,
-        "cost_multiplier": 1.2,
-        "course_upgrades": [
-            {
-                "title": "Lab Física",
-                "desc": "Equipamento moderno.",
-                "base_cost": 120,
-                "students_bonus": 15
-            },
-            {
-                "title": "Lab Quím.",
-                "desc": "Segurança e tecnologia.",
-                "base_cost": 300,
-                "students_bonus": 35
-            },
-            {
-                "title": "Investig.",
-                "desc": "Centro de pesquisa avançado.",
-                "base_cost": 600,
-                "students_bonus": 70
-            }
-        ],
-        "infra_upgrades": [
-            {
-                "title": "Elevadores",
-                "desc": "Novos elevadores rápidos.",
-                "base_cost": 200,
-                "students_bonus": 20
-            },
-            {
-                "title": "Auditório",
-                "desc": "Renovação do auditório.",
-                "base_cost": 400,
-                "students_bonus": 45
-            },
-            {
-                "title": "Cantina",
-                "desc": "Melhor alimentação.",
-                "base_cost": 800,
-                "students_bonus": 90
-            }
-        ],
-        "sustain_upgrades": [
-            {
-                "title": "Reciclagem",
-                "desc": "Ecopontos inteligentes.",
-                "base_cost": 250,
-                "sustain_bonus": 8
-            },
-            {
-                "title": "Água",
-                "desc": "Reutilização de águas.",
-                "base_cost": 500,
-                "sustain_bonus": 15
-            },
-            {
-                "title": "Jardim Vert",
-                "desc": "Fachada verde vertical.",
-                "base_cost": 1000,
-                "sustain_bonus": 25
-            }
-        ]
-    },
-    "f_mc": {
-        "title": "Edifício F",
-        "unlock_cost": 250,
-        "cost_multiplier": 1.3,
-        "course_upgrades": [
-            {
-                "title": "Matemática",
-                "desc": "Novas salas de aula.",
-                "base_cost": 150,
-                "students_bonus": 20
-            },
-            {
-                "title": "Estatíst.",
-                "desc": "Software especializado.",
-                "base_cost": 350,
-                "students_bonus": 40
-            },
-            {
-                "title": "Simulação",
-                "desc": "Labs de simulação.",
-                "base_cost": 700,
-                "students_bonus": 80
-            }
-        ],
-        "infra_upgrades": [
-            {
-                "title": "Projetores",
-                "desc": "Projeção 4K nas salas.",
-                "base_cost": 200,
-                "students_bonus": 25
-            },
-            {
-                "title": "Mobiliário",
-                "desc": "Cadeiras ergonómicas.",
-                "base_cost": 450,
-                "students_bonus": 50
-            },
-            {
-                "title": "Fibra Ót.",
-                "desc": "Rede de fibra dedicada.",
-                "base_cost": 900,
-                "students_bonus": 100
-            }
-        ],
-        "sustain_upgrades": [
-            {
-                "title": "Janelas",
-                "desc": "Vidro duplo eficiente.",
-                "base_cost": 300,
-                "sustain_bonus": 10
-            },
-            {
-                "title": "AVAC",
-                "desc": "Ventilação eficiente.",
-                "base_cost": 600,
-                "sustain_bonus": 20
-            },
-            {
-                "title": "Geotermia",
-                "desc": "Climatização passiva.",
-                "base_cost": 1200,
-                "sustain_bonus": 30
-            }
-        ]
-    },
-    "j_mc": {
-        "title": "Edifício J",
         "unlock_cost": 220,
         "cost_multiplier": 1.25,
         "course_upgrades": [
             {
-                "title": "Eng. Civil",
-                "desc": "Labs de materiais.",
+                "title": "Resistência",
+                "desc": "Curso de Materiais.",
                 "base_cost": 140,
                 "students_bonus": 18
             },
             {
-                "title": "Geotecnia",
-                "desc": "Equipamento de solo.",
+                "title": "Estruturas",
+                "desc": "Cálculo de estruturas.",
                 "base_cost": 320,
                 "students_bonus": 38
             },
             {
-                "title": "Estruturas",
-                "desc": "Tanque sísmico.",
+                "title": "Hidráulica",
+                "desc": "Mecânica de fluídos.",
                 "base_cost": 650,
                 "students_bonus": 75
             }
         ],
         "infra_upgrades": [
             {
-                "title": "Oficinas",
-                "desc": "Maquinaria pesada.",
+                "title": "Lab. Materiais",
+                "desc": "Testes de resistência.",
                 "base_cost": 220,
                 "students_bonus": 22
             },
             {
-                "title": "Segurança",
-                "desc": "Sistemas de proteção.",
+                "title": "Túnel Vento",
+                "desc": "Simulação aerodinâmica.",
                 "base_cost": 480,
                 "students_bonus": 48
             },
             {
-                "title": "Logística",
-                "desc": "Armazém automatizado.",
+                "title": "Tanque Sís.",
+                "desc": "Simulador de sismos.",
                 "base_cost": 950,
                 "students_bonus": 95
             }
         ],
         "sustain_upgrades": [
             {
-                "title": "Materiais",
-                "desc": "Uso de reciclados.",
+                "title": "Betão Eco",
+                "desc": "Materiais sustentáveis.",
                 "base_cost": 280,
                 "sustain_bonus": 9
             },
             {
-                "title": "Energia",
-                "desc": "Gestão inteligente.",
+                "title": "Isolamento",
+                "desc": "Eficiência energética.",
                 "base_cost": 550,
                 "sustain_bonus": 18
             },
             {
-                "title": "Baterias",
-                "desc": "Armazenamento energia.",
+                "title": "Telhados",
+                "desc": "Coberturas verdes.",
                 "base_cost": 1100,
                 "sustain_bonus": 28
+            }
+        ]
+    },
+    "f_mc": {
+        "title": "Edifício F",
+        "unlock_cost": 190,
+        "cost_multiplier": 1.2,
+        "course_upgrades": [
+            {
+                "title": "Termodin.",
+                "desc": "Estudos de energia.",
+                "base_cost": 135,
+                "students_bonus": 17
+            },
+            {
+                "title": "Órgãos Máq.",
+                "desc": "Design de componentes.",
+                "base_cost": 310,
+                "students_bonus": 36
+            },
+            {
+                "title": "Robótica",
+                "desc": "Automação industrial.",
+                "base_cost": 620,
+                "students_bonus": 72
+            }
+        ],
+        "infra_upgrades": [
+            {
+                "title": "Oficina",
+                "desc": "Maquinaria pesada.",
+                "base_cost": 190,
+                "students_bonus": 22
+            },
+            {
+                "title": "CNC",
+                "desc": "Fresadoras de precisão.",
+                "base_cost": 420,
+                "students_bonus": 46
+            },
+            {
+                "title": "Braços Rob.",
+                "desc": "Linha de montagem.",
+                "base_cost": 850,
+                "students_bonus": 92
+            }
+        ],
+        "sustain_upgrades": [
+            {
+                "title": "Lubrific.",
+                "desc": "Óleos biodegradáveis.",
+                "base_cost": 260,
+                "sustain_bonus": 9
+            },
+            {
+                "title": "Motores Ef.",
+                "desc": "Baixo consumo.",
+                "base_cost": 520,
+                "sustain_bonus": 17
+            },
+            {
+                "title": "Recup. Cal.",
+                "desc": "Aproveitamento térmico.",
+                "base_cost": 1050,
+                "sustain_bonus": 26
+            }
+        ]
+    },
+    "j_mc": {
+        "title": "Edifício J",
+        "unlock_cost": 230,
+        "cost_multiplier": 1.28,
+        "course_upgrades": [
+            {
+                "title": "Anatomia",
+                "desc": "Estudo do corpo humano.",
+                "base_cost": 160,
+                "students_bonus": 21
+            },
+            {
+                "title": "Biomateriais",
+                "desc": "Próteses e implantes.",
+                "base_cost": 360,
+                "students_bonus": 42
+            },
+            {
+                "title": "Imagem Méd.",
+                "desc": "Raios-X e RM.",
+                "base_cost": 720,
+                "students_bonus": 85
+            }
+        ],
+        "infra_upgrades": [
+            {
+                "title": "Microscopia",
+                "desc": "Análise celular.",
+                "base_cost": 230,
+                "students_bonus": 26
+            },
+            {
+                "title": "Sala Limpa",
+                "desc": "Ambiente esterilizado.",
+                "base_cost": 500,
+                "students_bonus": 52
+            },
+            {
+                "title": "Lab. Genét.",
+                "desc": "Sequenciação DNA.",
+                "base_cost": 1000,
+                "students_bonus": 105
+            }
+        ],
+        "sustain_upgrades": [
+            {
+                "title": "Gestão Res.",
+                "desc": "Lixo hospitalar.",
+                "base_cost": 290,
+                "sustain_bonus": 10
+            },
+            {
+                "title": "Filtração",
+                "desc": "Qualidade do ar.",
+                "base_cost": 580,
+                "sustain_bonus": 20
+            },
+            {
+                "title": "Painéis Sol.",
+                "desc": "Autossuficiência.",
+                "base_cost": 1150,
+                "sustain_bonus": 30
             }
         ]
     },
@@ -330,40 +330,40 @@
         "cost_multiplier": 1.15,
         "course_upgrades": [
             {
-                "title": "Eng. Elet.",
-                "desc": "Bancadas de teste.",
+                "title": "Circuitos",
+                "desc": "Eletrónica fundamental.",
                 "base_cost": 130,
                 "students_bonus": 16
             },
             {
-                "title": "Automação",
-                "desc": "Robôs industriais.",
+                "title": "Sist. Energia",
+                "desc": "Produção e transporte.",
                 "base_cost": 300,
                 "students_bonus": 35
             },
             {
-                "title": "Smart Grid",
-                "desc": "Lab de redes inteligentes.",
+                "title": "Telecom.",
+                "desc": "Redes e sinais.",
                 "base_cost": 600,
                 "students_bonus": 70
             }
         ],
         "infra_upgrades": [
             {
-                "title": "Labs",
-                "desc": "Renovação total.",
+                "title": "Bancadas",
+                "desc": "Estações de soldadura.",
                 "base_cost": 180,
                 "students_bonus": 20
             },
             {
-                "title": "Equipam.",
-                "desc": "Osciloscópios novos.",
+                "title": "Alta Tensão",
+                "desc": "Lab de potência.",
                 "base_cost": 400,
                 "students_bonus": 45
             },
             {
-                "title": "Prot. Elét.",
-                "desc": "Segurança elétrica.",
+                "title": "Smart Lab",
+                "desc": "Domótica avançada.",
                 "base_cost": 800,
                 "students_bonus": 90
             }
@@ -376,14 +376,14 @@
                 "sustain_bonus": 8
             },
             {
-                "title": "Monitoriz.",
-                "desc": "Consumo em tempo real.",
+                "title": "Baterias",
+                "desc": "Armazenamento eficiente.",
                 "base_cost": 480,
                 "sustain_bonus": 16
             },
             {
-                "title": "Eólicas",
-                "desc": "Micro-geração vertical.",
+                "title": "Micro-Gera.",
+                "desc": "Eólicas verticais.",
                 "base_cost": 960,
                 "sustain_bonus": 25
             }
@@ -391,109 +391,44 @@
     },
     "b_mc": {
         "title": "Edifício B",
-        "unlock_cost": 190,
-        "cost_multiplier": 1.2,
-        "course_upgrades": [
-            {
-                "title": "Eng. Mec.",
-                "desc": "Tornos CNC.",
-                "base_cost": 135,
-                "students_bonus": 17
-            },
-            {
-                "title": "Motores",
-                "desc": "Testes termodinâmicos.",
-                "base_cost": 310,
-                "students_bonus": 36
-            },
-            {
-                "title": "Print 3D",
-                "desc": "Impressoras 3D Metal.",
-                "base_cost": 620,
-                "students_bonus": 72
-            }
-        ],
-        "infra_upgrades": [
-            {
-                "title": "Ventilação",
-                "desc": "Extração de fumos.",
-                "base_cost": 190,
-                "students_bonus": 22
-            },
-            {
-                "title": "Ar Comp.",
-                "desc": "Rede industrial.",
-                "base_cost": 420,
-                "students_bonus": 46
-            },
-            {
-                "title": "Gruas",
-                "desc": "Movimentação carga.",
-                "base_cost": 850,
-                "students_bonus": 92
-            }
-        ],
-        "sustain_upgrades": [
-            {
-                "title": "Óleos",
-                "desc": "Reciclagem fluidos.",
-                "base_cost": 260,
-                "sustain_bonus": 9
-            },
-            {
-                "title": "Ruído",
-                "desc": "Isolamento acústico.",
-                "base_cost": 520,
-                "sustain_bonus": 17
-            },
-            {
-                "title": "Recup. Cal.",
-                "desc": "Recuperação térmica.",
-                "base_cost": 1050,
-                "sustain_bonus": 26
-            }
-        ]
-    },
-    "g_mc": {
-        "title": "Edifício G",
         "unlock_cost": 210,
         "cost_multiplier": 1.22,
         "course_upgrades": [
             {
-                "title": "Informát.",
-                "desc": "Salas de PC.",
+                "title": "Algoritmia",
+                "desc": "Fundamentos de código.",
                 "base_cost": 145,
                 "students_bonus": 19
             },
             {
-                "title": "Redes",
-                "desc": "Cisco Lab.",
+                "title": "Eng. Softw.",
+                "desc": "Desenvolvimento ágil.",
                 "base_cost": 330,
                 "students_bonus": 39
             },
             {
-                "title": "Ciberseg.",
-                "desc": "Security Ops Center.",
+                "title": "AI & ML",
+                "desc": "Inteligência Artificial.",
                 "base_cost": 660,
                 "students_bonus": 78
             }
         ],
         "infra_upgrades": [
             {
-                "title": "Servidores",
-                "desc": "Datacenter local.",
+                "title": "Salas PC",
+                "desc": "Computadores potentes.",
                 "base_cost": 210,
                 "students_bonus": 24
             },
             {
-                "title": "Cloud",
-                "desc": "Acesso Azure/AWS.",
+                "title": "Data Center",
+                "desc": "Servidores locais.",
                 "base_cost": 460,
                 "students_bonus": 49
             },
             {
-                "title": "VR / AR",
-                "desc": "Lab Realidade Virtual.",
+                "title": "Cloud Lab",
+                "desc": "Infraestrutura na nuvem.",
                 "base_cost": 920,
                 "students_bonus": 98
             }
@@ -506,80 +441,145 @@
                 "sustain_bonus": 9
             },
             {
-                "title": "Cooling",
-                "desc": "Refrigeração líquida.",
+                "title": "Green IT",
+                "desc": "Algoritmos eficientes.",
                 "base_cost": 540,
                 "sustain_bonus": 18
             },
             {
-                "title": "Green IT",
-                "desc": "Certificação ambiental.",
+                "title": "Cooling Liq",
+                "desc": "Refrigeração líquida.",
                 "base_cost": 1080,
                 "sustain_bonus": 27
             }
         ]
     },
-    "h_mc": {
-        "title": "Edifício H",
-        "unlock_cost": 230,
-        "cost_multiplier": 1.28,
+    "g_mc": {
+        "title": "Edifício G",
+        "unlock_cost": 180,
+        "cost_multiplier": 1.2,
         "course_upgrades": [
             {
-                "title": "Biorrecurs.",
-                "desc": "Estufas inteligentes.",
-                "base_cost": 160,
-                "students_bonus": 21
+                "title": "Reações",
+                "desc": "Cinética química.",
+                "base_cost": 120,
+                "students_bonus": 15
             },
             {
-                "title": "Alimentar",
-                "desc": "Cozinha experimental.",
-                "base_cost": 360,
-                "students_bonus": 42
+                "title": "Separação",
+                "desc": "Processos industriais.",
+                "base_cost": 300,
+                "students_bonus": 35
             },
             {
-                "title": "Ambiente",
-                "desc": "Análise de águas.",
-                "base_cost": 720,
-                "students_bonus": 85
+                "title": "Nanotech",
+                "desc": "Engenharia molecular.",
+                "base_cost": 600,
+                "students_bonus": 70
             }
         ],
         "infra_upgrades": [
             {
-                "title": "Labs ISO",
-                "desc": "Certificação ISO.",
-                "base_cost": 230,
-                "students_bonus": 26
+                "title": "Lab. Quím.",
+                "desc": "Bancadas equipadas.",
+                "base_cost": 200,
+                "students_bonus": 20
             },
             {
-                "title": "Câm. Frias",
-                "desc": "Conservação amostras.",
-                "base_cost": 500,
-                "students_bonus": 52
+                "title": "Exaustão",
+                "desc": "Hottes de segurança.",
+                "base_cost": 400,
+                "students_bonus": 45
             },
             {
-                "title": "ETAR",
-                "desc": "Tratamento local.",
-                "base_cost": 1000,
-                "students_bonus": 105
+                "title": "Reatores",
+                "desc": "Pilotos industriais.",
+                "base_cost": 800,
+                "students_bonus": 90
             }
         ],
         "sustain_upgrades": [
             {
-                "title": "Compost.",
-                "desc": "Resíduos orgânicos.",
-                "base_cost": 290,
+                "title": "Trat. Água",
+                "desc": "ETAR compacta.",
+                "base_cost": 250,
+                "sustain_bonus": 8
+            },
+            {
+                "title": "Quím. Verde",
+                "desc": "Solventes ecológicos.",
+                "base_cost": 500,
+                "sustain_bonus": 15
+            },
+            {
+                "title": "Reciclagem",
+                "desc": "Valorização resíduos.",
+                "base_cost": 1000,
+                "sustain_bonus": 25
+            }
+        ]
+    },
+    "h_mc": {
+        "title": "Edifício H",
+        "unlock_cost": 250,
+        "cost_multiplier": 1.3,
+        "course_upgrades": [
+            {
+                "title": "Álgebra",
+                "desc": "Fundamentos matemáticos.",
+                "base_cost": 150,
+                "students_bonus": 20
+            },
+            {
+                "title": "Física Apl.",
+                "desc": "Mecânica e ondas.",
+                "base_cost": 350,
+                "students_bonus": 40
+            },
+            {
+                "title": "Modelação",
+                "desc": "Simulação computacional.",
+                "base_cost": 700,
+                "students_bonus": 80
+            }
+        ],
+        "infra_upgrades": [
+            {
+                "title": "Salas Aula",
+                "desc": "Espaços amplos.",
+                "base_cost": 200,
+                "students_bonus": 25
+            },
+            {
+                "title": "Auditórios",
+                "desc": "Aulas teóricas.",
+                "base_cost": 450,
+                "students_bonus": 50
+            },
+            {
+                "title": "Labs Didát.",
+                "desc": "Experiências práticas.",
+                "base_cost": 900,
+                "students_bonus": 100
+            }
+        ],
+        "sustain_upgrades": [
+            {
+                "title": "Luz Natural",
+                "desc": "Claraboias.",
+                "base_cost": 300,
                 "sustain_bonus": 10
             },
             {
-                "title": "Águas Pluv.",
-                "desc": "Captação chuva.",
-                "base_cost": 580,
+                "title": "Sensores",
+                "desc": "Controlo Iluminação.",
+                "base_cost": 600,
                 "sustain_bonus": 20
             },
             {
-                "title": "Horta",
-                "desc": "Produção local.",
-                "base_cost": 1150,
+                "title": "Clima Pass.",
+                "desc": "Arquitetura bioclimática.",
+                "base_cost": 1200,
                 "sustain_bonus": 30
             }
         ]

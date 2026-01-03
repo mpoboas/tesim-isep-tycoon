@@ -10,6 +10,9 @@ var GLOBAL_MULTIPLIER = 1.0;
 var INCOME_PER_STUDENT = 0.5; // Dinheiro gerado por aluno por tick
 var TICK_RATE = 1000; // 1 segundo por tick
 
+// ID da composição do Adobe Animate
+var COMP_ID = "C4EE32689A47AB45842BDB0D0E7EC980";
+
 // ============================================
 // ESTADO DO JOGO (GAME STATE)
 // ============================================
@@ -26,10 +29,23 @@ var buildingsData = null;
 // Referências UI
 var uiInstance = null;
 var upgradePanel = null;
+var alertPanel = null;
+var hoverInstance = null; // Instância do tooltip de hover
 var currentOpenBuildingId = null;
+var isHoveringLocked = false;
 
 // Timer do loop de economia
 var gameTickInterval = null;
+
+// Helper para obter a library (lib) de forma robusta
+function getLib() {
+    if (window.lib) return window.lib;
+    if (typeof AdobeAn !== 'undefined') {
+        var comp = AdobeAn.getComposition(COMP_ID);
+        if (comp) return comp.getLibrary();
+    }
+    return null;
+}
 
 // ============================================
 // INICIALIZAÇÃO
@@ -43,27 +59,42 @@ function initGame() {
         return;
     }
 
+    // Tentar garantir que o Stage tem o mouse over ligado, mesmo que o HTML seja overwritten
+    if (window.stage) {
+        window.stage.enableMouseOver(20);
+    }
+
     // 1. Carregar Sons
     loadGameSounds();
 
     // 2. Carregar Dados (JSON)
     loadBuildingsData(function () {
-        // Callback quando JSON estiver carregado
-
         // 3. Inicializar Estado dos Edifícios
         initGameState();
 
-        // 4. Inicializar UI
-        initUI();
+        // 4. Configurar Painel de Alerta
+        initAlertPanel();
 
-        // 5. Configurar Edifícios no Stage
-        initBuildings();
+        // 5. Configurar Tooltip de Hover
+        initHoverTooltip();
 
         // 6. Configurar Painel de Upgrades
         initUpgradePanel();
 
-        // 7. Iniciar Loop de Economia
+        // 7. Inicializar UI
+        initUI();
+
+        // 8. Configurar Edifícios no Stage
+        initBuildings();
+
+        // 9. Iniciar Loop de Economia
         startGameLoop();
+
+        // 10. Listener Global de Mouse para o Hover seguir o rato
+        setupGlobalMouseMove();
+
+        // 11. Inicializar Carro
+        if (window.initCar) initCar();
 
         console.log("[ISEP Tycoon] Jogo iniciado com sucesso!");
     });
@@ -71,6 +102,7 @@ function initGame() {
 
 function loadGameSounds() {
     createjs.Sound.registerSound("assets/sfx/building_level_up.mp3", "levelUpSound");
+    createjs.Sound.registerSound("assets/sfx/wrong.mp3", "wrongSound");
 }
 
 function loadBuildingsData(callback) {
@@ -81,10 +113,10 @@ function loadBuildingsData(callback) {
         if (xhr.readyState == 4 && xhr.status == "200") {
             try {
                 buildingsData = JSON.parse(xhr.responseText);
-                console.log("[ISEP Tycoon] Dados carregados: " + Object.keys(buildingsData).length + " edifícios.");
+                console.log("[ISEP Tycoon] Dados carregados.");
                 if (callback) callback();
             } catch (e) {
-                console.error("[ISEP Tycoon] Erro ao fazer parse do JSON: ", e);
+                console.error("[ISEP Tycoon] Erro no JSON: ", e);
             }
         }
     };
@@ -92,7 +124,6 @@ function loadBuildingsData(callback) {
 }
 
 function initGameState() {
-    // Inicializar o estado de cada edifício com base no JSON
     for (var id in buildingsData) {
         gameState.buildings[id] = {
             unlocked: false,
@@ -103,116 +134,117 @@ function initGameState() {
     }
 }
 
+function findInstanceOnStage(id) {
+    if (exportRoot[id]) return exportRoot[id];
+    var lib = getLib();
+    if (lib && lib[id]) {
+        var constructor = lib[id];
+        for (var i = 0; i < exportRoot.children.length; i++) {
+            var child = exportRoot.children[i];
+            if (child instanceof constructor || (child.constructor && child.constructor === constructor)) {
+                return child;
+            }
+        }
+    }
+    return null;
+}
+
 // ============================================
-// UI & INTERFACE
+// UI & TOOLTIPS
 // ============================================
 function initUI() {
-    uiInstance = exportRoot.instance_1; // Ajustado conforme isep_game.js (instance_1 é ui_mc)
-    if (!uiInstance) console.warn("UI (instance_1) não encontrada!");
+    uiInstance = findInstanceOnStage("ui_mc");
     updateUI();
 }
 
 function updateUI() {
     if (!uiInstance) return;
-
     if (uiInstance.money_txt) uiInstance.money_txt.text = Math.floor(gameState.money) + "€";
     if (uiInstance.students_txt) uiInstance.students_txt.text = gameState.students + " Alunos";
     if (uiInstance.sustain_txt) uiInstance.sustain_txt.text = gameState.sustainability + "%";
 }
 
-function initUpgradePanel() {
-    // O painel de upgrade é o 'instance' (upgrade_mc) conforme isep_game.js
-    upgradePanel = exportRoot.instance;
+function initAlertPanel() {
+    var lib = getLib();
+    if (lib && lib.alert_mc) {
+        if (alertPanel && alertPanel.parent) alertPanel.parent.removeChild(alertPanel);
+        alertPanel = new window.lib.alert_mc();
+        alertPanel.name = "alertPanel";
+        // Posição inicial: Usando coordenadas sugeridas (Y negativo para esconder)
+        alertPanel.x = 786.95;
+        alertPanel.y = -100;
 
-    if (!upgradePanel) {
-        console.error("Painel de Upgrade (instance) não encontrado!");
-        return;
+        exportRoot.addChild(alertPanel);
     }
-
-    // Posição inicial (escondido à esquerda)
-    // Assumindo que o ponto de registo está no centro ou topo esquerdo, ajustamos para ficar fora
-    upgradePanel.x = -800;
-
-    // Configurar botões dentro do painel
-    setupUpgradeButton(upgradePanel.instance_2, "course");  // course_upgrade_mc
-    setupUpgradeButton(upgradePanel.instance_1, "infra");   // infra_upgrade_mc
-    setupUpgradeButton(upgradePanel.instance, "sustain"); // sustain_upgrade_mc (nota: instance dentro de upgrade_mc)
 }
 
-function setupUpgradeButton(mc, type) {
-    if (!mc) return;
+function initHoverTooltip() {
+    var lib = getLib();
+    if (lib && lib.hover_mc) {
+        if (hoverInstance && hoverInstance.parent) hoverInstance.parent.removeChild(hoverInstance);
+        hoverInstance = new lib.hover_mc();
+        hoverInstance.mouseEnabled = false;
+        hoverInstance.visible = false;
+        exportRoot.addChild(hoverInstance);
+    }
+}
 
-    // O botão de compra é o texto "comprar" ou a área clicável. 
-    // No JSON structure, parece que o próprio MC serve de botão ou tem um hit area.
-    // Vamos assumir que clicamos no MC todo para comprar.
+/**
+ * Listener global no Stage para o tooltip seguir o rato de forma fluída.
+ */
+function setupGlobalMouseMove() {
+    if (!window.stage) return;
 
-    mc.cursor = "pointer";
-    mc.mouseChildren = false; // Tratar como um botão único
+    window.stage.on("stagemousemove", function (evt) {
+        if (hoverInstance && hoverInstance.visible) {
+            // Converter posição do Stage para posição local dentro do exportRoot
+            var localPt = exportRoot.globalToLocal(evt.stageX, evt.stageY);
 
-    mc.on("click", function () {
-        buyUpgrade(type);
+            // Aplicar coordenadas com o offset para alinhar a ponta da seta (X: 88.15, Y: 166.4)
+            hoverInstance.x = localPt.x - 88.15;
+            hoverInstance.y = localPt.y - 166.4;
+
+            // Garantir que está sempre no topo
+            exportRoot.setChildIndex(hoverInstance, exportRoot.numChildren - 1);
+        }
     });
+}
+
+function showAlert() {
+    if (!alertPanel) return;
+    exportRoot.setChildIndex(alertPanel, exportRoot.numChildren - 1);
+    createjs.Sound.play("wrongSound");
+    createjs.Tween.get(alertPanel, { override: true })
+        .to({ x: 786.95, y: 23.6 }, 500, createjs.Ease.cubicOut)
+        .wait(2000)
+        .to({ y: -100 }, 500, createjs.Ease.cubicIn);
 }
 
 // ============================================
 // EDIFÍCIOS & INTERAÇÃO
 // ============================================
 function initBuildings() {
-    // Mapeamento manual das instâncias do stage para os IDs do JSON
-    // Atualizado com base no isep_game.js mais recente
-    var instanceMap = {
-        "biblioteca_mc": exportRoot.instance_3,
-        "secretaria_mc": exportRoot.instance_4,
-        "c_mc": exportRoot.instance_5,
-        "f_mc": exportRoot.instance_6,
-        "j_mc": exportRoot.instance_7,
-        "i_mc": exportRoot.instance_8,
-        "b_mc": exportRoot.instance_9,
-        "g_mc": exportRoot.instance_10,
-        "h_mc": exportRoot.instance_11,
-        "bar_mc": exportRoot.instance_12,
-
-        // Novos edifícios
-        "auditorio_mc": exportRoot.instance_2,
-        "estacionamento_sec_mc": exportRoot.instance_13,
-        "estacionamento_f_mc": exportRoot.instance_14,
-        "estacionamento_baixo_mc": exportRoot.instance_15,
-        "estacionamento_h_mc": exportRoot.instance_16,
-        "estacionamento_b_mc": exportRoot.instance_17,
-        "estacionamento_eng_mc": exportRoot.instance_18
-    };
-
     for (var id in buildingsData) {
-        var mc = instanceMap[id];
-        if (mc) {
-            setupBuildingInteraction(mc, id);
-        } else {
-            console.warn("Instância não encontrada para: " + id);
-        }
+        var mc = findInstanceOnStage(id);
+        if (mc) setupBuildingInteraction(mc, id);
     }
 
-    // Listener global para fechar painel ao clicar fora
-    stage.on("stagemousedown", function (evt) {
-        // Se o painel estiver aberto e o clique não for no painel nem num edifício
-        if (currentOpenBuildingId && upgradePanel.x > -100) {
-            // Verificar se clicou no painel
-            var pt = upgradePanel.globalToLocal(evt.stageX, evt.stageY);
-            if (!upgradePanel.hitTest(pt.x, pt.y)) {
-                closeUpgradePanel();
+    if (window.stage) {
+        window.stage.on("stagemousedown", function (evt) {
+            if (currentOpenBuildingId && upgradePanel && upgradePanel.x > -100) {
+                var pt = upgradePanel.globalToLocal(evt.stageX, evt.stageY);
+                if (!upgradePanel.hitTest(pt.x, pt.y)) closeUpgradePanel();
             }
-        }
-    });
+        });
+    }
 }
 
 function setupBuildingInteraction(mc, id) {
     mc.buildingId = id;
     mc.cursor = "pointer";
     mc.mouseChildren = false;
-
-    // Estado inicial visual
     mc.gotoAndStop(gameState.buildings[id].unlocked ? 1 : 0);
 
-    // Filtro de brilho para hover
     var brightnessFilter = new createjs.ColorMatrixFilter([
         1.2, 0, 0, 0, 10,
         0, 1.2, 0, 0, 10,
@@ -225,6 +257,11 @@ function setupBuildingInteraction(mc, id) {
         mc.alpha = 0.9;
         mc.filters = [brightnessFilter];
         mc.cache(0, 0, mc.nominalBounds.width, mc.nominalBounds.height);
+
+        if (!gameState.buildings[id].unlocked && hoverInstance) {
+            hoverInstance.visible = true;
+            updateHoverData(id);
+        }
     });
 
     mc.on("mouseout", function () {
@@ -232,110 +269,114 @@ function setupBuildingInteraction(mc, id) {
         mc.alpha = 1.0;
         mc.filters = [];
         mc.uncache();
+        if (hoverInstance) hoverInstance.visible = false;
     });
 
     mc.on("click", function (evt) {
-        // Impedir propagação para o stage (para não fechar o painel imediatamente)
         evt.stopPropagation();
         handleBuildingClick(id, mc);
+        if (hoverInstance) hoverInstance.visible = false;
     });
+}
+
+function updateHoverData(id) {
+    if (!hoverInstance || !buildingsData[id]) return;
+    var data = buildingsData[id];
+    if (hoverInstance.hover_building) hoverInstance.hover_building.text = data.title;
+    if (hoverInstance.hover_cost) hoverInstance.hover_cost.text = data.unlock_cost + "€";
 }
 
 function handleBuildingClick(id, mc) {
     var bState = gameState.buildings[id];
     var bData = buildingsData[id];
-
     if (!bState.unlocked) {
-        // Tentar desbloquear
         if (gameState.money >= bData.unlock_cost) {
             gameState.money -= bData.unlock_cost;
             bState.unlocked = true;
-
-            // Aplicar bónus de alunos ao desbloquear (se existir)
-            if (bData.students_bonus) {
-                gameState.students += bData.students_bonus;
-            }
-
+            if (bData.students_bonus) gameState.students += bData.students_bonus;
             mc.gotoAndStop(1);
             createjs.Sound.play("levelUpSound");
             updateUI();
-
-            // Animação de desbloqueio
-            createjs.Tween.get(mc)
-                .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
-                .to({ scaleX: 1, scaleY: 1 }, 200, createjs.Ease.bounceOut);
-
-            console.log("Desbloqueado: " + id);
+            createjs.Tween.get(mc).to({ scaleX: 1.2, scaleY: 1.2 }, 100).to({ scaleX: 1, scaleY: 1 }, 200, createjs.Ease.bounceOut);
         } else {
-            alert("Dinheiro insuficiente! Custo: " + bData.unlock_cost + "€");
+            showAlert();
         }
     } else {
-        // Já desbloqueado -> Abrir Painel APENAS se tiver upgrades
-        var hasUpgrades = (bData.course_upgrades && bData.course_upgrades.length > 0) ||
-            (bData.infra_upgrades && bData.infra_upgrades.length > 0) ||
-            (bData.sustain_upgrades && bData.sustain_upgrades.length > 0);
-
-        if (hasUpgrades) {
-            openUpgradePanel(id);
-        } else {
-            console.log("Edifício sem upgrades: " + id);
-            // Opcional: Mostrar um pequeno feedback visual ou som
-        }
+        var hasUpgrades = (bData.course_upgrades && bData.course_upgrades.length > 0) || (bData.infra_upgrades && bData.infra_upgrades.length > 0) || (bData.sustain_upgrades && bData.sustain_upgrades.length > 0);
+        if (hasUpgrades) openUpgradePanel(id);
     }
 }
 
 // ============================================
 // LÓGICA DE UPGRADES
 // ============================================
+function initUpgradePanel() {
+    upgradePanel = findInstanceOnStage("upgrade_mc");
+    if (!upgradePanel) return;
+    upgradePanel.x = -800;
+    var courseBtn = findChildByType(upgradePanel, "course_upgrade_mc");
+    var infraBtn = findChildByType(upgradePanel, "infra_upgrade_mc");
+    var sustainBtn = findChildByType(upgradePanel, "sustain_upgrade_mc");
+    setupUpgradeButton(courseBtn, "course");
+    setupUpgradeButton(infraBtn, "infra");
+    setupUpgradeButton(sustainBtn, "sustain");
+}
+
+function findChildByType(container, linkageName) {
+    var lib = getLib();
+    if (!lib || !lib[linkageName]) return null;
+    var constructor = lib[linkageName];
+    for (var i = 0; i < container.children.length; i++) {
+        var child = container.children[i];
+        if (child instanceof constructor || (child.constructor && child.constructor === constructor)) return child;
+    }
+    return null;
+}
+
+function setupUpgradeButton(mc, type) {
+    if (!mc) return;
+    mc.cursor = "pointer";
+    mc.mouseChildren = false;
+    mc.on("click", function () { buyUpgrade(type); });
+}
+
 function openUpgradePanel(buildingId) {
     currentOpenBuildingId = buildingId;
     updateUpgradePanelUI();
-
-    // Animar entrada
-    createjs.Tween.get(upgradePanel, { override: true })
-        .to({ x: 223 }, 500, createjs.Ease.cubicOut); // 223 é a posição original no FLA
+    createjs.Tween.get(upgradePanel, { override: true }).to({ x: 223 }, 500, createjs.Ease.cubicOut);
 }
 
 function closeUpgradePanel() {
     currentOpenBuildingId = null;
-    createjs.Tween.get(upgradePanel, { override: true })
-        .to({ x: -800 }, 500, createjs.Ease.cubicIn);
+    createjs.Tween.get(upgradePanel, { override: true }).to({ x: -800 }, 500, createjs.Ease.cubicIn);
 }
 
 function updateUpgradePanelUI() {
-    if (!currentOpenBuildingId) return;
-
+    if (!currentOpenBuildingId || !upgradePanel) return;
     var id = currentOpenBuildingId;
     var data = buildingsData[id];
     var state = gameState.buildings[id];
-
-    // Título do Painel
-    upgradePanel.upgrade_mc_title.text = data.title;
-
-    // Atualizar cada secção (Course, Infra, Sustain)
-    updateUpgradeSection(upgradePanel.instance_2, data.course_upgrades, state.course_level, data.cost_multiplier);
-    updateUpgradeSection(upgradePanel.instance_1, data.infra_upgrades, state.infra_level, data.cost_multiplier);
-    updateUpgradeSection(upgradePanel.instance, data.sustain_upgrades, state.sustain_level, data.cost_multiplier);
+    if (upgradePanel.upgrade_mc_title) upgradePanel.upgrade_mc_title.text = data.title;
+    var courseBtn = findChildByType(upgradePanel, "course_upgrade_mc");
+    var infraBtn = findChildByType(upgradePanel, "infra_upgrade_mc");
+    var sustainBtn = findChildByType(upgradePanel, "sustain_upgrade_mc");
+    updateUpgradeSection(courseBtn, data.course_upgrades, state.course_level, data.cost_multiplier);
+    updateUpgradeSection(infraBtn, data.infra_upgrades, state.infra_level, data.cost_multiplier);
+    updateUpgradeSection(sustainBtn, data.sustain_upgrades, state.sustain_level, data.cost_multiplier);
 }
 
 function updateUpgradeSection(mc, upgradesList, currentLevel, multiplier) {
-    // Frame 0, 1, 2, 3 correspondem aos níveis visualmente
+    if (!mc) return;
     mc.gotoAndStop(currentLevel);
-
-    // Usar a nova função robusta para encontrar os campos de texto
     var fields = findTextFields(mc);
-
     if (currentLevel < 3) {
         var nextUpgrade = upgradesList[currentLevel];
         var cost = Math.floor(nextUpgrade.base_cost * GLOBAL_MULTIPLIER * multiplier);
-
         if (fields.title) fields.title.text = nextUpgrade.title;
         if (fields.desc) fields.desc.text = nextUpgrade.desc;
         if (fields.price) fields.price.text = cost + "€";
         if (fields.btn) fields.btn.text = "COMPRAR";
-
     } else {
-        // Nível Máximo (Frame 3)
         if (fields.title) fields.title.text = "MÁXIMO";
         if (fields.desc) fields.desc.text = "Nível máximo atingido.";
         if (fields.price) fields.price.text = "---";
@@ -343,40 +384,16 @@ function updateUpgradeSection(mc, upgradesList, currentLevel, multiplier) {
     }
 }
 
-// Função auxiliar robusta para encontrar campos de texto pela posição
 function findTextFields(mc) {
-    var fields = {
-        title: null,
-        desc: null,
-        price: null,
-        btn: null
-    };
-
+    var fields = { title: null, desc: null, price: null, btn: null };
     if (!mc || !mc.children) return fields;
-
     for (var i = 0; i < mc.children.length; i++) {
         var child = mc.children[i];
-
-        // Verificar se é um objeto de texto
         if (child instanceof createjs.Text) {
-            // Identificar pelo posicionamento aproximado (tolerância de +/- 20px)
-
-            // Título: x ≈ 113, y ≈ 8
-            if (Math.abs(child.x - 113) < 20 && Math.abs(child.y - 8) < 20) {
-                fields.title = child;
-            }
-            // Descrição: x ≈ 113, y ≈ 42
-            else if (Math.abs(child.x - 113) < 20 && Math.abs(child.y - 42) < 20) {
-                fields.desc = child;
-            }
-            // Preço: x ≈ 308, y ≈ 50
-            else if (Math.abs(child.x - 308) < 20 && Math.abs(child.y - 50) < 20) {
-                fields.price = child;
-            }
-            // Botão (Texto "comprar"): x ≈ 308, y ≈ 23
-            else if (Math.abs(child.x - 308) < 20 && Math.abs(child.y - 23) < 20) {
-                fields.btn = child;
-            }
+            if (Math.abs(child.x - 113) < 30 && Math.abs(child.y - 8) < 30) fields.title = child;
+            else if (Math.abs(child.x - 113) < 30 && Math.abs(child.y - 42) < 30) fields.desc = child;
+            else if (Math.abs(child.x - 308) < 30 && Math.abs(child.y - 50) < 30) fields.price = child;
+            else if (Math.abs(child.x - 308) < 30 && Math.abs(child.y - 23) < 30) fields.btn = child;
         }
     }
     return fields;
@@ -384,39 +401,26 @@ function findTextFields(mc) {
 
 function buyUpgrade(type) {
     if (!currentOpenBuildingId) return;
-
     var id = currentOpenBuildingId;
     var data = buildingsData[id];
     var state = gameState.buildings[id];
-    var levelKey = type + "_level"; // course_level, infra_level...
+    var levelKey = type + "_level";
     var upgradesList = data[type + "_upgrades"];
-
     var currentLevel = state[levelKey];
-
-    if (currentLevel >= 3) return; // Já está no máximo
-
+    if (currentLevel >= 3) return;
     var upgradeInfo = upgradesList[currentLevel];
     var cost = Math.floor(upgradeInfo.base_cost * GLOBAL_MULTIPLIER * data.cost_multiplier);
-
     if (gameState.money >= cost) {
-        // Comprar
         gameState.money -= cost;
         state[levelKey]++;
-
-        // Aplicar bónus
         if (upgradeInfo.students_bonus) gameState.students += upgradeInfo.students_bonus;
         if (upgradeInfo.sustain_bonus) gameState.sustainability += upgradeInfo.sustain_bonus;
-
-        // Limitar sustentabilidade a 100%
         if (gameState.sustainability > 100) gameState.sustainability = 100;
-
         createjs.Sound.play("levelUpSound");
         updateUI();
         updateUpgradePanelUI();
-
-        console.log("Upgrade comprado: " + type + " nível " + state[levelKey] + " para " + id);
     } else {
-        alert("Dinheiro insuficiente! Custo: " + cost + "€");
+        showAlert();
     }
 }
 
@@ -429,25 +433,12 @@ function startGameLoop() {
 }
 
 function gameTick() {
-    // Calcular rendimento
-    // Base: alunos * income
-    // Manutenção: custo base reduzido pela sustentabilidade
-
     var income = gameState.students * INCOME_PER_STUDENT;
-
-    // Custo de manutenção (exemplo simples: 10% do income é perdido em manutenção, 
-    // mas sustentabilidade reduz isso)
-    // Se sustain = 100%, manutenção = 0. Se sustain = 0%, manutenção = max.
-
     var maintenanceFactor = 1 - (gameState.sustainability / 100);
     var maintenanceCost = (gameState.students * 0.1) * maintenanceFactor;
-
     var profit = income - maintenanceCost;
-
     if (profit > 0) {
         gameState.money += profit;
         updateUI();
     }
-
-    // console.log("Tick: Income=" + income.toFixed(1) + " Maint=" + maintenanceCost.toFixed(1));
 }

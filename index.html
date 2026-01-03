@@ -1,19 +1,186 @@
 <!DOCTYPE html>
-<!--
-	ISEP Tycoon - Adobe Animate HTML5 Canvas
-	Inclui lógica de jogo via game_logic.js
--->
-<html>
+<html lang="pt">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="authoring-tool" content="Adobe_Animate_CC">
 <title>ISEP Tycoon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html, body {
+	font-family: 'Inter', sans-serif;
+	/* Light Mode - Solid Color (No Pattern) */
+	background-color: #f1f8e9; 
+	color: #1a1a1a;
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+}
+
+.page-wrapper {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	width: 100vw;
+}
+
+/* Header - Forest Theme */
+.header {
+	flex: 0 0 auto;
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #2E7D32; /* Forest Green */
+	border-bottom: 4px solid #5D4037; /* Brown Border */
+	box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+	z-index: 10;
+}
+
+.logo-img {
+	height: 60px;
+	filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* Game Container */
+.game-container {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	min-height: 0;
+	overflow: hidden;
+}
+
+#animation_container {
+	background-color: #fff;
+	box-shadow: 0 10px 40px rgba(46, 125, 50, 0.4); /* Green tinted shadow */
+	border: 2px solid #5D4037; /* Brown border */
+	border-radius: 8px;
+	overflow: hidden;
+	position: relative;
+	/* Constraints to prevent overflow */
+	max-width: 100%;
+	max-height: 100%;
+	/* 16:9 ratio using width as base, capped by height */
+	width: min(100%, calc((100vh - 120px) * 16 / 9));
+	aspect-ratio: 16 / 9;
+}
+
+#canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+#dom_overlay_container {
+	pointer-events: none;
+	overflow: hidden;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* Footer - Forest Theme */
+.footer {
+	flex: 0 0 auto;
+	padding: 8px 15px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #2E7D32; /* Forest Green */
+	border-top: 4px solid #5D4037; /* Brown Border */
+	font-size: 0.9rem;
+	color: #ffffff;
+	gap: 25px;
+	flex-wrap: wrap;
+	box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+	z-index: 10;
+}
+
+.footer-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	white-space: nowrap;
+	font-weight: 600;
+}
+
+/* Landscape rotation suggestion for mobile */
+.rotate-message {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #2E7D32;
+	z-index: 9999;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	text-align: center;
+	padding: 20px;
+}
+
+.rotate-icon {
+	font-size: 4rem;
+	margin-bottom: 20px;
+	animation: rotate-hint 2s infinite ease-in-out;
+}
+
+@keyframes rotate-hint {
+	0%, 100% { transform: rotate(0deg); }
+	50% { transform: rotate(90deg); }
+}
+
+/* Em mobile portrait, mostrar sugestão de rotação */
+@media (max-aspect-ratio: 1/1) and (max-width: 768px) {
+	.rotate-message {
+		display: flex;
+	}
+	
+	.page-wrapper {
+		display: none;
+	}
+}
+
+/* Ajustes para landscape */
+@media (min-aspect-ratio: 16/10) {
+	.header {
+		padding: 5px;
+	}
+	
+	.logo-img {
+		height: 50px;
+	}
+	
+	.footer {
+		padding: 5px 10px;
+		font-size: 0.75rem;
+	}
+}
+</style>
+
 <!-- CreateJS Library -->
 <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
 <!-- Adobe Animate Export -->
-<script src="isep_game.js?1765054520519"></script>
+<script src="isep_game.js?1767383137092"></script>
 <!-- Game Logic -->
 <script src="game_logic.js"></script>
+<script src="car_logic.js"></script>
 <script>
 var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
 
@@ -37,7 +204,6 @@ function handleFileLoad(evt, comp) {
 }
 
 function handleComplete(evt, comp) {
-	// This function is always called, irrespective of the content.
 	var lib = comp.getLibrary();
 	var ss = comp.getSpriteSheet();
 	var queue = evt.target;
@@ -51,39 +217,110 @@ function handleComplete(evt, comp) {
 	}
 	
 	exportRoot = new lib.isep_game();
-	stage = new lib.Stage(canvas);
+	window.exportRoot = exportRoot;
+	window.lib = lib;
 	
-	// =========================================================
-	// IMPORTANTE: Ativar deteção de mouseover (hover)
-	// O número 20 é a frequência de verificação (vezes por segundo)
-	// Sem isto, os eventos "mouseover" e "mouseout" NÃO funcionam!
-	// =========================================================
+	stage = new lib.Stage(canvas);
+	window.stage = stage;
+	
 	stage.enableMouseOver(20);
 	
-	// Registers the "tick" event listener.
 	fnStartAnimation = function() {
 		stage.addChild(exportRoot);
 		createjs.Ticker.framerate = lib.properties.fps;
 		createjs.Ticker.addEventListener("tick", stage);
 	}
 	
-	// Code to support hidpi screens and responsive scaling.
-	AdobeAn.makeResponsive(false, 'both', false, 1, [canvas, anim_container, dom_overlay_container]);
+	// Custom resize function - maintains 16:9 strictly
+	function resizeCanvas() {
+		var container = document.querySelector('.game-container');
+		var rect = container.getBoundingClientRect();
+		var availableWidth = rect.width - 20;
+		var availableHeight = rect.height - 20;
+		
+		var originalWidth = 1920;
+		var originalHeight = 1080;
+		var ratio = originalWidth / originalHeight; // 16:9
+		
+		// Calculate size maintaining ratio
+		var targetWidth, targetHeight;
+		
+		if (availableWidth / availableHeight > ratio) {
+			targetHeight = availableHeight;
+			targetWidth = targetHeight * ratio;
+		} else {
+			targetWidth = availableWidth;
+			targetHeight = targetWidth / ratio;
+		}
+		
+		anim_container.style.width = Math.floor(targetWidth) + 'px';
+		anim_container.style.height = Math.floor(targetHeight) + 'px';
+		canvas.style.width = '100%';
+		canvas.style.height = '100%';
+	}
+	
+	resizeCanvas();
+	window.addEventListener('resize', resizeCanvas);
+	
 	AdobeAn.compositionLoaded(lib.properties.id);
 	fnStartAnimation();
 	
-	// ========================================
-	// INICIALIZAR O JOGO APÓS O STAGE ESTAR PRONTO
-	// ========================================
-	initGame();
+	// Ensure fonts are loaded before initializing game logic
+	if(window.initGame) {
+		console.log("[HTML] Checking fonts before initGame...");
+		if (document.fonts) {
+			document.fonts.ready.then(function() {
+				console.log("[HTML] Fonts loaded, initializing game logic...");
+				initGame();
+			});
+		} else {
+			// Fallback for older browsers
+			setTimeout(initGame, 500);
+		}
+	}
 }
 </script>
 </head>
-<body onload="init();" style="margin:0px;">
-	<div id="animation_container" style="background-color:rgba(255, 255, 255, 1.00); width:1920px; height:1080px">
-		<canvas id="canvas" width="1920" height="1080" style="position: absolute; display: block; background-color:rgba(255, 255, 255, 1.00);"></canvas>
-		<div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:1920px; height:1080px; position: absolute; left: 0px; top: 0px; display: block;">
-		</div>
+<body onload="init();">
+	<!-- Hidden elements to force font loading -->
+	<div style="font-family: 'Bebas Neue'; opacity: 0; position: absolute; pointer-events: none;">preload</div>
+	<div style="font-family: 'Inter'; opacity: 0; position: absolute; pointer-events: none;">preload</div>
+	<!-- Rotate suggestion for portrait mobile -->
+	<div class="rotate-message">
+		<div class="rotate-icon">📱</div>
+		<h2>Roda o dispositivo</h2>
+		<p>Este jogo funciona melhor em modo paisagem (horizontal)</p>
+	</div>
+
+	<div class="page-wrapper">
+		<!-- Header -->
+		<header class="header">
+			<img src="assets/logo.png" alt="ISEP Logo" class="logo-img">
+		</header>
+
+		<!-- Game Container -->
+		<main class="game-container">
+			<div id="animation_container">
+				<canvas id="canvas" width="1920" height="1080"></canvas>
+				<div id="dom_overlay_container"></div>
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="footer-item">
+				<span>🏢</span>
+				<span>Clica para comprar edifícios</span>
+			</div>
+			<div class="footer-item">
+				<span>🌱</span>
+				<span>Aumenta o teu nível de sustentabilidade</span>
+			</div>
+			<div class="footer-item">
+				<span>🎮</span>
+				<span>Experimenta usar WASD ou as setas ;)</span>
+			</div>
+		</footer>
 	</div>
 </body>
-</html>
+</html

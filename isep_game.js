@@ -62,29 +62,29 @@ if (reversed == null) { reversed = false; }
 	cjs.MovieClip.apply(this,[props]);
 
 	// ui
-	this.sustain_txt = new cjs.Text("SUS", "61px 'Bebas Neue'", "#CCCCCC");
+	this.sustain_txt = new cjs.Text("100%", "61px 'Bebas Neue'", "#CCCCCC");
 	this.sustain_txt.name = "sustain_txt";
 	this.sustain_txt.textAlign = "center";
 	this.sustain_txt.lineHeight = 75;
-	this.sustain_txt.lineWidth = 184;
+	this.sustain_txt.lineWidth = 110;
 	this.sustain_txt.parent = this;
-	this.sustain_txt.setTransform(565.7,4.5);
+	this.sustain_txt.setTransform(597.95,12.75);
 
-	this.students_txt = new cjs.Text("ALUNOS", "61px 'Bebas Neue'", "#CCCCCC");
+	this.students_txt = new cjs.Text("5000 ALUNOS", "61px 'Bebas Neue'", "#CCCCCC");
 	this.students_txt.name = "students_txt";
 	this.students_txt.textAlign = "center";
 	this.students_txt.lineHeight = 75;
-	this.students_txt.lineWidth = 184;
+	this.students_txt.lineWidth = 261;
 	this.students_txt.parent = this;
-	this.students_txt.setTransform(344.55,6.55);
+	this.students_txt.setTransform(374.2,12.75);
 
-	this.money_txt = new cjs.Text("dinheiro", "61px 'Bebas Neue'", "#CCCCCC");
+	this.money_txt = new cjs.Text("1000000€", "61px 'Bebas Neue'", "#CCCCCC");
 	this.money_txt.name = "money_txt";
 	this.money_txt.textAlign = "center";
 	this.money_txt.lineHeight = 75;
-	this.money_txt.lineWidth = 184;
+	this.money_txt.lineWidth = 200;
 	this.money_txt.parent = this;
-	this.money_txt.setTransform(109.5,4.5);
+	this.money_txt.setTransform(107.65,12.75);
 
 	this.shape = new cjs.Shape();
 	this.shape.graphics.f().s("#4A362C").ss(5,1,1).p("EgulgEbMBdLAAAIAAI4MhdLAAAg");
@@ -98,7 +98,7 @@ if (reversed == null) { reversed = false; }
 
 	this._renderFirstFrame();
 
-}).prototype = getMCSymbolPrototype(lib.ui_mc, new cjs.Rectangle(0,0,662.1,81.8), null);
+}).prototype = getMCSymbolPrototype(lib.ui_mc, new cjs.Rectangle(0,0,662.1,88), null);
 
 
 (lib.sustain_upgrade_button_mc = function(mode,startPosition,loop,reversed) {
@@ -178,6 +178,29 @@ if (reversed == null) { reversed = false; }
 
 }).prototype = p = new cjs.MovieClip();
 p.nominalBounds = new cjs.Rectangle(0,0,330.8,176.2);
+
+
+(lib.limite_mc = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+
+	// limite
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f().s("#9900CC").ss(2,1,1).p("Eg1ohLfIjkBdMhCbA0tIk+a2MAFvAwpIIeTnIOQHNMAr8ACnMC4sgAfMAAGhWOMg7bhHWgEghxhTkIz3IF");
+	this.shape.setTransform(823.95,535.925);
+
+	this.timeline.addTween(cjs.Tween.get(this.shape).wait(1));
+
+	this._renderFirstFrame();
+
+}).prototype = getMCSymbolPrototype(lib.limite_mc, new cjs.Rectangle(0,0,1647.9,1071.9), null);
 
 
 (lib.j_mc = function(mode,startPosition,loop,reversed) {
@@ -297,6 +320,49 @@ if (reversed == null) { reversed = false; }
 
 }).prototype = p = new cjs.MovieClip();
 p.nominalBounds = new cjs.Rectangle(0,0,292.9,334.7);
+
+
+(lib.hover_mc = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+
+	// box
+	this.hover_cost = new cjs.Text("1000€", "39px 'Bebas Neue'", "#99FF33");
+	this.hover_cost.name = "hover_cost";
+	this.hover_cost.textAlign = "center";
+	this.hover_cost.lineHeight = 49;
+	this.hover_cost.lineWidth = 162;
+	this.hover_cost.parent = this;
+	this.hover_cost.setTransform(90.9,73.95);
+
+	this.hover_building = new cjs.Text("PARQUE BAIXO", "37px 'Bebas Neue'", "#CCCCCC");
+	this.hover_building.name = "hover_building";
+	this.hover_building.textAlign = "center";
+	this.hover_building.lineHeight = 46;
+	this.hover_building.lineWidth = 162;
+	this.hover_building.parent = this;
+	this.hover_building.setTransform(90.9,19.45);
+
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f().s("#331A11").ss(5,1,1).p("Ai6F4Iq5AAIAAyFIbnAAIAASFIrAAAAi6F4IDEGWICqmWg");
+	this.shape.setTransform(90.875,80.65);
+
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#4A362C").s().p("Ai6F4Iq5AAIAAyEIbnAAIAASEIrAAAIluAAIFuAAIiqGVg");
+	this.shape_1.setTransform(90.875,80.65);
+
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_1},{t:this.shape},{t:this.hover_building},{t:this.hover_cost}]}).wait(1));
+
+	this._renderFirstFrame();
+
+}).prototype = getMCSymbolPrototype(lib.hover_mc, new cjs.Rectangle(0,0,181.8,161.3), null);
 
 
 (lib.h_mc = function(mode,startPosition,loop,reversed) {
@@ -629,6 +695,33 @@ if (reversed == null) { reversed = false; }
 }).prototype = getMCSymbolPrototype(lib.course_upgrade_button_mc, new cjs.Rectangle(-2.5,-2.5,90,81.7), null);
 
 
+(lib.carro_mc = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+
+	// carro
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f().s("#000000").ss(2,1,1).p("ADRh2IAAAhADRBXIAAAeADEiSIAAEkImUAAIAAkkgAgnCkIhgAAACgCjIhfAAACoijIhlAAAgeifIhqAA");
+	this.shape.setTransform(21.85,17.575);
+
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#990000").s().p("AjJCSIAAkjIGTAAIAAEjg");
+	this.shape_1.setTransform(21.225,17.525);
+
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_1},{t:this.shape}]}).wait(1));
+
+	this._renderFirstFrame();
+
+}).prototype = getMCSymbolPrototype(lib.carro_mc, new cjs.Rectangle(0,0.2,43.7,34.8), null);
+
+
 (lib.c_mc = function(mode,startPosition,loop,reversed) {
 if (loop == null) { loop = true; }
 if (reversed == null) { reversed = false; }
@@ -875,7 +968,7 @@ if (reversed == null) { reversed = false; }
 p.nominalBounds = new cjs.Rectangle(0,-13.7,174,237.5);
 
 
-(lib.sustain_upgrade_mc = function(mode,startPosition,loop,reversed) {
+(lib.alert_mc = function(mode,startPosition,loop,reversed) {
 if (loop == null) { loop = true; }
 if (reversed == null) { reversed = false; }
 	var props = new Object();
@@ -886,112 +979,30 @@ if (reversed == null) { reversed = false; }
 	props.reversed = reversed;
 	cjs.MovieClip.apply(this,[props]);
 
-	// Layer_2
+	// dinheiro_insuf
+	this.text = new cjs.Text("DINHEIRO INSUFICIENTE", "56px 'Bebas Neue'", "#CCCCCC");
+	this.text.textAlign = "center";
+	this.text.lineHeight = 69;
+	this.text.lineWidth = 418;
+	this.text.parent = this;
+	this.text.setTransform(216.95,17.4);
+
 	this.shape = new cjs.Shape();
-	this.shape.graphics.f().s("#009900").ss(5,1,1).p("Am0hiINpAAIAADGItpAAg");
-	this.shape.setTransform(157.475,107.35);
+	this.shape.graphics.f().s("#4A1515").ss(5,1,1).p("EgulgEbMBdLAAAIAAI4MhdLAAAg");
+	this.shape.setTransform(216.7171,37.1989,0.7185,1.2189);
 
 	this.shape_1 = new cjs.Shape();
-	this.shape_1.graphics.f("#009900").s().p("Am0BjIAAjGINpAAIAADGg");
-	this.shape_1.setTransform(157.475,107.35);
+	this.shape_1.graphics.f("#6C3625").s().p("EgulAEdIAAo5MBdLAAAIAAI5g");
+	this.shape_1.setTransform(216.7171,37.1989,0.7185,1.2189);
 
-	this.shape_2 = new cjs.Shape();
-	this.shape_2.graphics.f().s("#009900").ss(5,1,1).p("ABNBkIAAjGIKZAAIAADGIqZAAIsyAAIAAjGIMyAA");
-	this.shape_2.setTransform(188,107.35);
-
-	this.shape_3 = new cjs.Shape();
-	this.shape_3.graphics.f("#009900").s().p("ABNBjIsyAAIAAjGIMyAAIAADGIAAjGIKZAAIAADGgABNhjg");
-	this.shape_3.setTransform(188,107.35);
-
-	this.shape_4 = new cjs.Shape();
-	this.shape_4.graphics.f().s("#009900").ss(5,1,1).p("AD4hiIOpAAIAADGIupAAIplAAIAAjGgAD4BkIAAjGAltBkIszAAIAAjGIMzAA");
-	this.shape_4.setTransform(232.275,107.35);
-
-	this.shape_5 = new cjs.Shape();
-	this.shape_5.graphics.f("#009900").s().p("AD4BjIAAjGIOpAAIAADGgAltBjIAAjGIJlAAIAADGgAygBjIAAjGIMzAAIAADGgAlthjg");
-	this.shape_5.setTransform(232.275,107.35);
-
-	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape_1},{t:this.shape}]},1).to({state:[{t:this.shape_3},{t:this.shape_2}]},1).to({state:[{t:this.shape_5},{t:this.shape_4}]},1).wait(1));
-
-	// course_upgrade
-	this.sustain_upgrade_price_txt = new cjs.Text("€€€", "24px 'Bebas Neue'", "#FFFFFF");
-	this.sustain_upgrade_price_txt.name = "sustain_upgrade_price_txt";
-	this.sustain_upgrade_price_txt.textAlign = "center";
-	this.sustain_upgrade_price_txt.lineHeight = 31;
-	this.sustain_upgrade_price_txt.lineWidth = 86;
-	this.sustain_upgrade_price_txt.parent = this;
-	this.sustain_upgrade_price_txt.setTransform(308.05,50.65);
-
-	this.text = new cjs.Text("comprar", "24px 'Bebas Neue'", "#FFFFFF");
-	this.text.textAlign = "center";
-	this.text.lineHeight = 31;
-	this.text.lineWidth = 86;
-	this.text.parent = this;
-	this.text.setTransform(308.05,23.15);
-
-	this.instance = new lib.sustain_upgrade_button_mc();
-	this.instance.setTransform(307.75,50.65,1,1,0,0,0,42.5,38.3);
-
-	this.sustain_upgrade_desc_txt = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
-	this.sustain_upgrade_desc_txt.name = "sustain_upgrade_desc_txt";
-	this.sustain_upgrade_desc_txt.lineHeight = 19;
-	this.sustain_upgrade_desc_txt.lineWidth = 143;
-	this.sustain_upgrade_desc_txt.parent = this;
-	this.sustain_upgrade_desc_txt.setTransform(113.65,42.95);
-
-	this.sustain_upgrade_title_txt = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
-	this.sustain_upgrade_title_txt.name = "sustain_upgrade_title_txt";
-	this.sustain_upgrade_title_txt.lineHeight = 40;
-	this.sustain_upgrade_title_txt.lineWidth = 86;
-	this.sustain_upgrade_title_txt.parent = this;
-	this.sustain_upgrade_title_txt.setTransform(113.65,8.25);
-
-	this.shape_6 = new cjs.Shape();
-	this.shape_6.graphics.f().s("#4A362C").ss(5,1,1).p("A8WqDMA4tAAAIAAUHMg4tAAAgAaEExIAADHMglAAAAIAAjHg");
-	this.shape_6.setTransform(183.95,66.875);
-
-	this.shape_7 = new cjs.Shape();
-	this.shape_7.graphics.f("#4A362C").s().p("AygBjIAAjGMAlBAAAIAADGg");
-	this.shape_7.setTransform(232.275,107.35);
-
-	this.shape_8 = new cjs.Shape();
-	this.shape_8.graphics.f("#8C6252").s().p("A8VKEIAA0HMA4rAAAIAAUHgArPH4IASAAMAlBAAAIAYAAIAAjHIgYAAMglBAAAIgSAAgAMtDdINRAAIAAr9ItRAAg");
-	this.shape_8.setTransform(183.95,66.875);
-
-	this.instance_1 = new lib.course_upgrade_button_mc();
-	this.instance_1.setTransform(307.75,50.65,1,1,0,0,0,42.5,38.3);
-
-	this.infra_upgrade_desc_txt = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
-	this.infra_upgrade_desc_txt.name = "infra_upgrade_desc_txt";
-	this.infra_upgrade_desc_txt.lineHeight = 19;
-	this.infra_upgrade_desc_txt.lineWidth = 143;
-	this.infra_upgrade_desc_txt.parent = this;
-	this.infra_upgrade_desc_txt.setTransform(113.65,42.95);
-
-	this.infra_upgrade_title_txt = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
-	this.infra_upgrade_title_txt.name = "infra_upgrade_title_txt";
-	this.infra_upgrade_title_txt.lineHeight = 40;
-	this.infra_upgrade_title_txt.lineWidth = 86;
-	this.infra_upgrade_title_txt.parent = this;
-	this.infra_upgrade_title_txt.setTransform(113.65,8.25);
-
-	this.shape_9 = new cjs.Shape();
-	this.shape_9.graphics.f().s("#525252").ss(5,1,1).p("Amol+INRAAIAAL9ItRAAg");
-	this.shape_9.setTransform(307.725,50.675);
-
-	this.shape_10 = new cjs.Shape();
-	this.shape_10.graphics.f("#525252").s().p("AmoF/IAAr9INRAAIAAL9g");
-	this.shape_10.setTransform(307.725,50.675);
-
-	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.sustain_upgrade_title_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4}},{t:this.sustain_upgrade_desc_txt,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.sustain_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8}},{t:this.sustain_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.sustain_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8}},{t:this.sustain_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_10},{t:this.shape_6},{t:this.shape_9},{t:this.sustain_upgrade_desc_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4,lineWidth:86}},{t:this.text,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.sustain_upgrade_price_txt,p:{y:37.7,text:"MÁX",color:"#666666"}}]},1).wait(1));
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_1},{t:this.shape},{t:this.text}]}).wait(1));
 
 	this._renderFirstFrame();
 
-}).prototype = p = new cjs.MovieClip();
-p.nominalBounds = new cjs.Rectangle(0,0,367.9,133.8);
+}).prototype = getMCSymbolPrototype(lib.alert_mc, new cjs.Rectangle(0,0,433.5,86.6), null);
 
 
-(lib.infra_upgrade_mc = function(mode,startPosition,loop,reversed) {
+(lib.sustain_upgrade_mc = function(mode,startPosition,loop,reversed) {
 if (loop == null) { loop = true; }
 if (reversed == null) { reversed = false; }
 	var props = new Object();
@@ -1030,13 +1041,13 @@ if (reversed == null) { reversed = false; }
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape_1},{t:this.shape}]},1).to({state:[{t:this.shape_3},{t:this.shape_2}]},1).to({state:[{t:this.shape_5},{t:this.shape_4}]},1).wait(1));
 
 	// course_upgrade
-	this.infra_upgrade_price_txt = new cjs.Text("€€€", "24px 'Bebas Neue'", "#FFFFFF");
-	this.infra_upgrade_price_txt.name = "infra_upgrade_price_txt";
-	this.infra_upgrade_price_txt.textAlign = "center";
-	this.infra_upgrade_price_txt.lineHeight = 31;
-	this.infra_upgrade_price_txt.lineWidth = 86;
-	this.infra_upgrade_price_txt.parent = this;
-	this.infra_upgrade_price_txt.setTransform(308.05,50.65);
+	this.sustain_upgrade_price_txt = new cjs.Text("€€€", "24px 'Bebas Neue'", "#FFFFFF");
+	this.sustain_upgrade_price_txt.name = "sustain_upgrade_price_txt";
+	this.sustain_upgrade_price_txt.textAlign = "center";
+	this.sustain_upgrade_price_txt.lineHeight = 31;
+	this.sustain_upgrade_price_txt.lineWidth = 86;
+	this.sustain_upgrade_price_txt.parent = this;
+	this.sustain_upgrade_price_txt.setTransform(308.05,50.65);
 
 	this.text = new cjs.Text("comprar", "24px 'Bebas Neue'", "#FFFFFF");
 	this.text.textAlign = "center";
@@ -1045,22 +1056,22 @@ if (reversed == null) { reversed = false; }
 	this.text.parent = this;
 	this.text.setTransform(308.05,23.15);
 
-	this.instance = new lib.infra_upgrade_button_mc();
+	this.instance = new lib.sustain_upgrade_button_mc();
 	this.instance.setTransform(307.75,50.65,1,1,0,0,0,42.5,38.3);
 
-	this.infra_upgrade_desc_txt = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
-	this.infra_upgrade_desc_txt.name = "infra_upgrade_desc_txt";
-	this.infra_upgrade_desc_txt.lineHeight = 19;
-	this.infra_upgrade_desc_txt.lineWidth = 143;
-	this.infra_upgrade_desc_txt.parent = this;
-	this.infra_upgrade_desc_txt.setTransform(113.65,42.95);
+	this.sustain_upgrade_desc_txt = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
+	this.sustain_upgrade_desc_txt.name = "sustain_upgrade_desc_txt";
+	this.sustain_upgrade_desc_txt.lineHeight = 19;
+	this.sustain_upgrade_desc_txt.lineWidth = 143;
+	this.sustain_upgrade_desc_txt.parent = this;
+	this.sustain_upgrade_desc_txt.setTransform(113.65,43.85);
 
-	this.infra_upgrade_title_txt = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
-	this.infra_upgrade_title_txt.name = "infra_upgrade_title_txt";
-	this.infra_upgrade_title_txt.lineHeight = 40;
-	this.infra_upgrade_title_txt.lineWidth = 86;
-	this.infra_upgrade_title_txt.parent = this;
-	this.infra_upgrade_title_txt.setTransform(113.65,8.25);
+	this.sustain_upgrade_title_txt = new cjs.Text("título", "28px 'Bebas Neue'", "#FFFFFF");
+	this.sustain_upgrade_title_txt.name = "sustain_upgrade_title_txt";
+	this.sustain_upgrade_title_txt.lineHeight = 36;
+	this.sustain_upgrade_title_txt.lineWidth = 143;
+	this.sustain_upgrade_title_txt.parent = this;
+	this.sustain_upgrade_title_txt.setTransform(113.65,9.15);
 
 	this.shape_6 = new cjs.Shape();
 	this.shape_6.graphics.f().s("#4A362C").ss(5,1,1).p("AaEExIAADHMglAAAAIAAjHgA8WqDMA4tAAAIAAUHMg4tAAAg");
@@ -1077,19 +1088,19 @@ if (reversed == null) { reversed = false; }
 	this.instance_1 = new lib.course_upgrade_button_mc();
 	this.instance_1.setTransform(307.75,50.65,1,1,0,0,0,42.5,38.3);
 
-	this.infra_upgrade_desc_txt_1 = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
-	this.infra_upgrade_desc_txt_1.name = "infra_upgrade_desc_txt_1";
-	this.infra_upgrade_desc_txt_1.lineHeight = 19;
-	this.infra_upgrade_desc_txt_1.lineWidth = 143;
-	this.infra_upgrade_desc_txt_1.parent = this;
-	this.infra_upgrade_desc_txt_1.setTransform(113.65,42.95);
+	this.infra_upgrade_desc_txt = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
+	this.infra_upgrade_desc_txt.name = "infra_upgrade_desc_txt";
+	this.infra_upgrade_desc_txt.lineHeight = 19;
+	this.infra_upgrade_desc_txt.lineWidth = 143;
+	this.infra_upgrade_desc_txt.parent = this;
+	this.infra_upgrade_desc_txt.setTransform(113.65,42.95);
 
-	this.infra_upgrade_title_txt_1 = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
-	this.infra_upgrade_title_txt_1.name = "infra_upgrade_title_txt_1";
-	this.infra_upgrade_title_txt_1.lineHeight = 40;
-	this.infra_upgrade_title_txt_1.lineWidth = 86;
-	this.infra_upgrade_title_txt_1.parent = this;
-	this.infra_upgrade_title_txt_1.setTransform(113.65,8.25);
+	this.infra_upgrade_title_txt = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
+	this.infra_upgrade_title_txt.name = "infra_upgrade_title_txt";
+	this.infra_upgrade_title_txt.lineHeight = 40;
+	this.infra_upgrade_title_txt.lineWidth = 86;
+	this.infra_upgrade_title_txt.parent = this;
+	this.infra_upgrade_title_txt.setTransform(113.65,8.25);
 
 	this.shape_9 = new cjs.Shape();
 	this.shape_9.graphics.f().s("#525252").ss(5,1,1).p("Amol+INRAAIAAL9ItRAAg");
@@ -1099,7 +1110,7 @@ if (reversed == null) { reversed = false; }
 	this.shape_10.graphics.f("#525252").s().p("AmoF/IAAr9INRAAIAAL9g");
 	this.shape_10.setTransform(307.725,50.675);
 
-	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4}},{t:this.infra_upgrade_desc_txt,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt_1},{t:this.infra_upgrade_desc_txt_1},{t:this.infra_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8}},{t:this.infra_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt_1},{t:this.infra_upgrade_desc_txt_1},{t:this.infra_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8}},{t:this.infra_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_10},{t:this.shape_6},{t:this.shape_9},{t:this.infra_upgrade_desc_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4,lineWidth:86}},{t:this.text,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.infra_upgrade_price_txt,p:{y:37.7,text:"MÁX",color:"#666666"}}]},1).wait(1));
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.sustain_upgrade_title_txt,p:{x:113.65,y:9.15,text:"título",font:"28px 'Bebas Neue'",textAlign:"",lineHeight:35.6,lineWidth:143}},{t:this.sustain_upgrade_desc_txt,p:{x:113.65,y:43.85,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.sustain_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.sustain_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.sustain_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_10},{t:this.shape_6},{t:this.shape_9},{t:this.sustain_upgrade_desc_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4,lineWidth:86}},{t:this.text,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.sustain_upgrade_price_txt,p:{y:37.7,text:"MÁX",color:"#666666"}}]},1).wait(1));
 
 	this._renderFirstFrame();
 
@@ -1107,7 +1118,7 @@ if (reversed == null) { reversed = false; }
 p.nominalBounds = new cjs.Rectangle(0,0,367.9,133.8);
 
 
-(lib.course_upgrade_mc = function(mode,startPosition,loop,reversed) {
+(lib.infra_upgrade_mc = function(mode,startPosition,loop,reversed) {
 if (loop == null) { loop = true; }
 if (reversed == null) { reversed = false; }
 	var props = new Object();
@@ -1146,6 +1157,122 @@ if (reversed == null) { reversed = false; }
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape_1},{t:this.shape}]},1).to({state:[{t:this.shape_3},{t:this.shape_2}]},1).to({state:[{t:this.shape_5},{t:this.shape_4}]},1).wait(1));
 
 	// course_upgrade
+	this.infra_upgrade_price_txt = new cjs.Text("€€€", "24px 'Bebas Neue'", "#FFFFFF");
+	this.infra_upgrade_price_txt.name = "infra_upgrade_price_txt";
+	this.infra_upgrade_price_txt.textAlign = "center";
+	this.infra_upgrade_price_txt.lineHeight = 31;
+	this.infra_upgrade_price_txt.lineWidth = 86;
+	this.infra_upgrade_price_txt.parent = this;
+	this.infra_upgrade_price_txt.setTransform(308.05,50.65);
+
+	this.text = new cjs.Text("comprar", "24px 'Bebas Neue'", "#FFFFFF");
+	this.text.textAlign = "center";
+	this.text.lineHeight = 31;
+	this.text.lineWidth = 86;
+	this.text.parent = this;
+	this.text.setTransform(308.05,23.15);
+
+	this.instance = new lib.infra_upgrade_button_mc();
+	this.instance.setTransform(307.75,50.65,1,1,0,0,0,42.5,38.3);
+
+	this.infra_upgrade_desc_txt = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
+	this.infra_upgrade_desc_txt.name = "infra_upgrade_desc_txt";
+	this.infra_upgrade_desc_txt.lineHeight = 19;
+	this.infra_upgrade_desc_txt.lineWidth = 143;
+	this.infra_upgrade_desc_txt.parent = this;
+	this.infra_upgrade_desc_txt.setTransform(113.65,43.85);
+
+	this.infra_upgrade_title_txt = new cjs.Text("título", "28px 'Bebas Neue'", "#FFFFFF");
+	this.infra_upgrade_title_txt.name = "infra_upgrade_title_txt";
+	this.infra_upgrade_title_txt.lineHeight = 36;
+	this.infra_upgrade_title_txt.lineWidth = 143;
+	this.infra_upgrade_title_txt.parent = this;
+	this.infra_upgrade_title_txt.setTransform(113.65,9.15);
+
+	this.shape_6 = new cjs.Shape();
+	this.shape_6.graphics.f().s("#4A362C").ss(5,1,1).p("A8WqDMA4tAAAIAAUHMg4tAAAgAaEExIAADHMglAAAAIAAjHg");
+	this.shape_6.setTransform(183.95,66.875);
+
+	this.shape_7 = new cjs.Shape();
+	this.shape_7.graphics.f("#4A362C").s().p("AygBjIAAjGMAlBAAAIAADGg");
+	this.shape_7.setTransform(232.275,107.35);
+
+	this.shape_8 = new cjs.Shape();
+	this.shape_8.graphics.f("#8C6252").s().p("A8VKEIAA0HMA4rAAAIAAUHgArPH4IASAAMAlBAAAIAYAAIAAjHIgYAAMglBAAAIgSAAgAMtDdINRAAIAAr9ItRAAg");
+	this.shape_8.setTransform(183.95,66.875);
+
+	this.instance_1 = new lib.course_upgrade_button_mc();
+	this.instance_1.setTransform(307.75,50.65,1,1,0,0,0,42.5,38.3);
+
+	this.infra_upgrade_desc_txt_1 = new cjs.Text("Descrição", "14px 'Tahoma'", "#FFFFFF");
+	this.infra_upgrade_desc_txt_1.name = "infra_upgrade_desc_txt_1";
+	this.infra_upgrade_desc_txt_1.lineHeight = 19;
+	this.infra_upgrade_desc_txt_1.lineWidth = 143;
+	this.infra_upgrade_desc_txt_1.parent = this;
+	this.infra_upgrade_desc_txt_1.setTransform(113.65,42.95);
+
+	this.infra_upgrade_title_txt_1 = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
+	this.infra_upgrade_title_txt_1.name = "infra_upgrade_title_txt_1";
+	this.infra_upgrade_title_txt_1.lineHeight = 40;
+	this.infra_upgrade_title_txt_1.lineWidth = 86;
+	this.infra_upgrade_title_txt_1.parent = this;
+	this.infra_upgrade_title_txt_1.setTransform(113.65,8.25);
+
+	this.shape_9 = new cjs.Shape();
+	this.shape_9.graphics.f().s("#525252").ss(5,1,1).p("Amol+INRAAIAAL9ItRAAg");
+	this.shape_9.setTransform(307.725,50.675);
+
+	this.shape_10 = new cjs.Shape();
+	this.shape_10.graphics.f("#525252").s().p("AmoF/IAAr9INRAAIAAL9g");
+	this.shape_10.setTransform(307.725,50.675);
+
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt,p:{x:113.65,y:9.15,text:"título",font:"28px 'Bebas Neue'",textAlign:"",lineHeight:35.6,lineWidth:143}},{t:this.infra_upgrade_desc_txt,p:{x:113.65,y:43.85,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt_1},{t:this.infra_upgrade_desc_txt_1},{t:this.infra_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt_1},{t:this.infra_upgrade_desc_txt_1},{t:this.infra_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance_1},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.infra_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_10},{t:this.shape_6},{t:this.shape_9},{t:this.infra_upgrade_desc_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4,lineWidth:86}},{t:this.text,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.infra_upgrade_price_txt,p:{y:37.7,text:"MÁX",color:"#666666"}}]},1).wait(1));
+
+	this._renderFirstFrame();
+
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(0,0,367.9,133.8);
+
+
+(lib.course_upgrade_mc = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+
+	// Layer_2
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f().s("#009900").ss(5,1,1).p("Am0hiINpAAIAADGItpAAg");
+	this.shape.setTransform(157.475,107.35);
+
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#009900").s().p("Am0BjIAAjGINpAAIAADGg");
+	this.shape_1.setTransform(157.475,107.35);
+
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f().s("#009900").ss(5,1,1).p("ABNhiIKZAAIAADGIqZAAgABNBkIsyAAIAAjGIMyAA");
+	this.shape_2.setTransform(188,107.35);
+
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#009900").s().p("ABNBjIAAjGIKZAAIAADGgABNBjIsyAAIAAjGIMyAAIAADGg");
+	this.shape_3.setTransform(188,107.35);
+
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f().s("#009900").ss(5,1,1).p("AD4hiIOpAAIAADGIupAAgAlthiIJlAAAD4BkIplAAIAAjGAltBkIszAAIAAjGIMzAA");
+	this.shape_4.setTransform(232.275,107.35);
+
+	this.shape_5 = new cjs.Shape();
+	this.shape_5.graphics.f("#009900").s().p("AD4BjIAAjGIOpAAIAADGgAltBjIAAjGIJlAAIAADGgAltBjIszAAIAAjGIMzAAIAADGg");
+	this.shape_5.setTransform(232.275,107.35);
+
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape_1},{t:this.shape}]},1).to({state:[{t:this.shape_3},{t:this.shape_2}]},1).to({state:[{t:this.shape_5},{t:this.shape_4}]},1).wait(1));
+
+	// course_upgrade
 	this.course_upgrade_price_txt = new cjs.Text("€€€", "24px 'Bebas Neue'", "#FFFFFF");
 	this.course_upgrade_price_txt.name = "course_upgrade_price_txt";
 	this.course_upgrade_price_txt.textAlign = "center";
@@ -1169,17 +1296,17 @@ if (reversed == null) { reversed = false; }
 	this.course_upgrade_desc_txt.lineHeight = 19;
 	this.course_upgrade_desc_txt.lineWidth = 143;
 	this.course_upgrade_desc_txt.parent = this;
-	this.course_upgrade_desc_txt.setTransform(113.65,42.95);
+	this.course_upgrade_desc_txt.setTransform(113.65,43.85);
 
-	this.course_upgrade_title_txt = new cjs.Text("título", "32px 'Bebas Neue'", "#FFFFFF");
+	this.course_upgrade_title_txt = new cjs.Text("título", "28px 'Bebas Neue'", "#FFFFFF");
 	this.course_upgrade_title_txt.name = "course_upgrade_title_txt";
-	this.course_upgrade_title_txt.lineHeight = 40;
-	this.course_upgrade_title_txt.lineWidth = 86;
+	this.course_upgrade_title_txt.lineHeight = 36;
+	this.course_upgrade_title_txt.lineWidth = 143;
 	this.course_upgrade_title_txt.parent = this;
-	this.course_upgrade_title_txt.setTransform(113.65,8.25);
+	this.course_upgrade_title_txt.setTransform(113.65,9.15);
 
 	this.shape_6 = new cjs.Shape();
-	this.shape_6.graphics.f().s("#4A362C").ss(5,1,1).p("A8WqDMA4tAAAIAAUHMg4tAAAgAaEExIAADHMglAAAAIAAjHg");
+	this.shape_6.graphics.f().s("#4A362C").ss(5,1,1).p("AaEExIAADHMglAAAAIAAjHgA8WqDMA4tAAAIAAUHMg4tAAAg");
 	this.shape_6.setTransform(183.95,66.875);
 
 	this.shape_7 = new cjs.Shape();
@@ -1212,7 +1339,7 @@ if (reversed == null) { reversed = false; }
 	this.shape_10.graphics.f("#525252").s().p("AmoF/IAAr9INRAAIAAL9g");
 	this.shape_10.setTransform(307.725,50.675);
 
-	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.course_upgrade_title_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4}},{t:this.course_upgrade_desc_txt,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.course_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8}},{t:this.course_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.course_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8}},{t:this.course_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_10},{t:this.shape_6},{t:this.shape_9},{t:this.course_upgrade_desc_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4,lineWidth:86}},{t:this.text,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.course_upgrade_price_txt,p:{y:37.7,text:"MÁX",color:"#666666"}}]},1).wait(1));
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.course_upgrade_title_txt,p:{x:113.65,y:9.15,text:"título",font:"28px 'Bebas Neue'",textAlign:"",lineHeight:35.6,lineWidth:143}},{t:this.course_upgrade_desc_txt,p:{x:113.65,y:43.85,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.course_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.infra_upgrade_title_txt},{t:this.infra_upgrade_desc_txt},{t:this.course_upgrade_title_txt,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_desc_txt,p:{x:308.05,y:50.65,text:"€€€",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.instance},{t:this.text,p:{x:308.05,y:23.15,text:"comprar",font:"24px 'Bebas Neue'",textAlign:"center",lineHeight:30.8,lineWidth:86}},{t:this.course_upgrade_price_txt,p:{y:50.65,text:"€€€",color:"#FFFFFF"}}]},1).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.shape_10},{t:this.shape_6},{t:this.shape_9},{t:this.course_upgrade_desc_txt,p:{x:113.65,y:8.25,text:"título",font:"32px 'Bebas Neue'",textAlign:"",lineHeight:40.4,lineWidth:86}},{t:this.text,p:{x:113.65,y:42.95,text:"Descrição",font:"14px 'Tahoma'",textAlign:"",lineHeight:18.9,lineWidth:143}},{t:this.course_upgrade_price_txt,p:{y:37.7,text:"MÁX",color:"#666666"}}]},1).wait(1));
 
 	this._renderFirstFrame();
 
@@ -1250,13 +1377,13 @@ if (reversed == null) { reversed = false; }
 	this.timeline.addTween(cjs.Tween.get(this.instance_2).wait(1));
 
 	// upgrade
-	this.upgrade_mc_title = new cjs.Text("título", "54px 'Bebas Neue'", "#CCCCCC");
+	this.upgrade_mc_title = new cjs.Text("título edifício", "48px 'Bebas Neue'", "#CCCCCC");
 	this.upgrade_mc_title.name = "upgrade_mc_title";
 	this.upgrade_mc_title.textAlign = "center";
-	this.upgrade_mc_title.lineHeight = 67;
-	this.upgrade_mc_title.lineWidth = 129;
+	this.upgrade_mc_title.lineHeight = 60;
+	this.upgrade_mc_title.lineWidth = 365;
 	this.upgrade_mc_title.parent = this;
-	this.upgrade_mc_title.setTransform(186,8.8);
+	this.upgrade_mc_title.setTransform(192.3,17.65);
 
 	this.shape = new cjs.Shape();
 	this.shape.graphics.f().s("#4A362C").ss(5,1,1).p("EgdwgnZMA7ZAAAIAAKNMg7ZAAAgA9u7kMA7fAAAMAAABC+Mg7fAAAg");
@@ -1362,11 +1489,11 @@ if (reversed == null) { reversed = false; }
 
 	// l
 	this.shape_3 = new cjs.Shape();
-	this.shape_3.graphics.f().s("#525252").ss(3,1,1).p("AoslJIJ7meIHXLPIgRBpIpqGdInIrJIgPhuIHXLRIJ7mgArSlWIAAFAIJfOLIAAkdIpfuuINSoeIJTOgAhVGIIAABmAhzN1IMrolIAbkkItGIs");
+	this.shape_3.graphics.f().s("#525252").ss(3,1,1).p("AoslJIJ7meIHXLPIgRBpIpqGdInIrJIgPhuIHXLRIAABmArSlWIAAFAIJfOLIAAkdIpfuuINSoeIJTOgAhVGIIJ7mgAhzN1IMrolIAbkkItGIs");
 	this.shape_3.setTransform(744.325,693);
 
 	this.shape_4 = new cjs.Shape();
-	this.shape_4.graphics.f("#5C5C5A").s().p("ArSklIAAlAIJfOtIAAEegAhzFIINGoqIgbEjIsrIlgAhVDfIAAhmIJ7mhIgRBrIpqGcgAodnqIgPhuIHXLRIAABmgAhVB5g");
+	this.shape_4.graphics.f("#5C5C5A").s().p("ArSklIAAlAIJfOtIAAEegAhzFIINGoqIgbEjIsrIlgAodnqIgPhuIHXLRIAABmIAAhmIJ7mhIgRBrIpqGcgAhVB5g");
 	this.shape_4.setTransform(744.325,720.125);
 
 	this.shape_5 = new cjs.Shape();
@@ -1393,9 +1520,15 @@ if (reversed == null) { reversed = false; }
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_12).wait(1));
 
+	// carro_mc
+	this.instance_13 = new lib.carro_mc();
+	this.instance_13.setTransform(934.4,252.05,1,1,-29.9992,0,0,15.6,21.2);
+
+	this.timeline.addTween(cjs.Tween.get(this.instance_13).wait(1));
+
 	// estrada
 	this.shape_6 = new cjs.Shape();
-	this.shape_6.graphics.f().s("#333333").ss(3,1,1).p("EgxohPvIAkA+IImOrIAABrQALBiiQB1IElHHIDmhxILxUzIBjDNIhAFCIGwgvIBIgpIlVnUIDbiHQhEALh4g8IoGtlIBOhXIMnoKIE3G/IA9goIhykBIDFiNIksmkImCEWIiij0InUEgICADbQjuDGhphVItu3OIlPAAEBL6BIMMAAAhO4Ig4AAIAAo3ImSCiIAAKUIAaR2IBnAAMAAAAvXIBDAzIAAIcQhoBRhQhhIAAikMg3wgASIAAH3MA30AAAIAADQIHXAAIAAmgIgdgfIAAglIAtAAIEYAAIAApKQgEg9Bfg9IDhAAIAADvIXuAAIAAshI3hAAIAAELImvAAQiSBQggDXIAALEEhKWBC8QhoB9jnAqIkWAzQlbA0lcg0QjPggi+hzQhOgviOisQhChiAkhMIkvgeIB+DYQDOEXC4BZQDuB4FFAJIPOghQDIADBuARQBgAPAZAaEhKWBC8QAMgPAKgPEhKWBC8IBpFc");
+	this.shape_6.graphics.f().s("#333333").ss(3,1,1).p("EBL6BIMMAAAhO4Ig4AAIAAo3ImSCiIAAKUIAaR2IBnAAMAAAAvXIBDAzIAAIcQhoBRhQhhIAAikMg3wgASIAAH3MA30AAAIAADQIHXAAIAAmgIgdgfIAAglIAtAAIEYAAIAApKQgEg9Bfg9IDhAAIAADvIXuAAIAAshI3hAAIAAELImvAAQiSBQggDXIAALEEgxohPvIAkA+IImOrIAABrQALBiiQB1IElHHIDmhxILxUzIBjDNIhAFCIGwgvIBIgpIlVnUIDbiHQhEALh4g8IoGtlIBOhXIMnoKIE3G/IA9goIhykBIDFiNIksmkImCEWIiij0InUEgICADbQjuDGhphVItu3OIlPAAEhKWBC8QhoB9jnAqIkWAzQlbA0lcg0QjPggi+hzQhOgviOisQhChiAkhMIkvgeIB+DYQDOEXC4BZQDuB4FFAJIPOghQDIADBuARQBgAPAZAaEhKWBC8QAMgPAKgPEhKWBC8IBpFc");
 	this.shape_6.setTransform(1219.1,504.075);
 
 	this.shape_7 = new cjs.Shape();
@@ -1406,7 +1539,7 @@ if (reversed == null) { reversed = false; }
 
 	// relva
 	this.shape_8 = new cjs.Shape();
-	this.shape_8.graphics.f().s("#588F4B").ss(3,2,0,3).p("EAYfhBfIKjQvIAxghIiMjhIYKvOICVDwICxhhQCPhDB6BwIDSiVIo2raI5XEqgEghnhFuMghBAUNIjGjcIaQ2lIGnBVgEgNCg+1IDMiEIHjpTIK2gcIk6OHIoGFAIlDozIjJCBgEgDngt+IIBNIQBhBmCOg1IZ+vyIq1wlIplGuIEyHfIkpDGIk3m/gEgPOAipIBGBRICuhyMAMJg6pIuf3aIh7BMINeWrgEgdVhERIgxhMI49OMQitAwjqDNQkvERiLBRIAzBJgEgczgy7IE9jNIlupTIkMCmIDUKhgEg6UgTsIDmiTIi0kcIDTiJIERGpIm/EagEhfPgCPIgrAhIDbFYId7xYIhtidI8nR1gEhpSAXyIiylUIuXHSIFZZGIC6M3QCZKPD5B/QD5B/HvA7MAuOgAhQlAjODCkiQJLmsOrnZQCshWgSlHQkGnxjgl2IkPDYMgrTAcKItmhYQlShohclMIl96XIhUmcQgBhBA3g3gEAqCAb3IAxhxIkEmrIbgxNIDbAAIAAqDIqfBDIpQuYIiqB9IhLh5I57P2ILyTBIBTg4gEgP3A4AICODxITJsfIiajQgEAQWAm0IBaCTIUGAAIAAr2IjIk1Iz+MMgEh60AX2IlT7XQACj4EGkMMApigexIBQBeI6WUfILKRLImeEsIFEH7IrKHRgEhq6AR2IC5FMIISlYIi0lDgEhKKATDIQ3btInaE7IxL72gEAcWBHKIAAGnMgueAAYIUlkKICdBmgEgRmA4zIuUIzICNDrIOsongEBjZALeIEsAAIAAlxIXzAAMgrtg3zIAAD2IFjISIGvL6IDHMEIh7BLIAACrIF2gTIAAJGIkJAAgEApTApcIFVAAIAADzQkmA+gyg+gEBjfAcOIEgAAIAAtNIkgAAgEBjmA3AIHYAAIAAwhIL4AAIAAk7IulAAIAAiRIk1AAgEBbdAUXIBmAAIAAcZIhmAAgEBjiA5XIIVAAIAADsImeAAQhdAegaBJg");
+	this.shape_8.graphics.f().s("#588F4B").ss(3,2,0,3).p("EghnhFuMghBAUNIjGjcIaQ2lIGnBVgEgNCg+1IDMiEIHjpTIK2gcIk6OHIoGFAIlDozIjJCBgEAYfhBfIKjQvIAxghIiMjhIYKvOICVDwICxhhQCPhDB6BwIDSiVIo2raI5XEqgEBjZALeIEsAAIAAlxIXzAAMgrtg3zIAAD2IFjISIGvL6IDHMEIh7BLIAACrIF2gTIAAJGIkJAAgEAqCAb3IAxhxIkEmrIbgxNIDbAAIAAqDIqfBDIpQuYIiqB9IhLh5I57P2ILyTBIBTg4gEAQWAm0IBaCTIUGAAIAAr2IjIk1Iz+MMgEApTApcIFVAAIAADzQkmA+gyg+gEBjfAcOIEgAAIAAtNIkgAAgEBjmA3AIHYAAIAAwhIL4AAIAAk7IulAAIAAiRIk1AAgEBbdAUXIBmAAIAAcZIhmAAgEBjiA5XIIVAAIAADsImeAAQhdAegaBJgEgDngt+IIBNIQBhBmCOg1IZ+vyIq1wlIplGuIEyHfIkpDGIk3m/gEgPOAipIBGBRICuhyMAMJg6pIuf3aIh7BMINeWrgEgdVhERIgxhMI49OMQitAwjqDNQkvERiLBRIAzBJgEgczgy7IE9jNIlupTIkMCmIDUKhgEg6UgTsIDmiTIi0kcIDTiJIERGpIm/EagEhfPgCPIgrAhIDbFYId7xYIhtidI8nR1gEhpSAXyIiylUIuXHSIFZZGIC6M3QCZKPD5B/QD5B/HvA7MAuOgAhQlAjODCkiQJLmsOrnZQCshWgSlHQkGnxjgl2IkPDYMgrTAcKItmhYQlShohclMIl96XIhUmcQgBhBA3g3gEgP3A4AICODxITJsfIiajQgEh60AX2IlT7XQACj4EGkMMApigexIBQBeI6WUfILKRLImeEsIFEH7IrKHRgEhq6AR2IC5FMIISlYIi0lDgEhKKATDIQ3btInaE7IxL72gEAcWBHKIAAGnMgueAAYIUlkKICdBmgEgRmA4zIuUIzICNDrIOsong");
 	this.shape_8.setTransform(1076.4395,470.6554);
 
 	this.shape_9 = new cjs.Shape();
@@ -1416,40 +1549,46 @@ if (reversed == null) { reversed = false; }
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_9},{t:this.shape_8}]}).wait(1));
 
 	// estacionamento_sec_mc
-	this.instance_13 = new lib.estacionamento_sec_mc();
-	this.instance_13.setTransform(1206.85,853.55,1,1,0,0,0,466.7,119.2);
-
-	this.timeline.addTween(cjs.Tween.get(this.instance_13).wait(1));
-
-	// estacionamento_f_mc
-	this.instance_14 = new lib.estacionamento_f_mc();
-	this.instance_14.setTransform(1416.55,228,1,1,0,0,0,324.6,194.7);
+	this.instance_14 = new lib.estacionamento_sec_mc();
+	this.instance_14.setTransform(1206.85,853.55,1,1,0,0,0,466.7,119.2);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_14).wait(1));
 
-	// estacionamento_baixo_mc
-	this.instance_15 = new lib.estacionamento_baixo_mc();
-	this.instance_15.setTransform(1122.5,511.6,1,1,0,0,0,121.4,180.6);
+	// estacionamento_f_mc
+	this.instance_15 = new lib.estacionamento_f_mc();
+	this.instance_15.setTransform(1416.55,228,1,1,0,0,0,324.6,194.7);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_15).wait(1));
 
-	// estacionamento_h_mc
-	this.instance_16 = new lib.estacionamento_h_mc();
-	this.instance_16.setTransform(834.05,490.15,1,1,0,0,0,230.2,366.3);
+	// estacionamento_baixo_mc
+	this.instance_16 = new lib.estacionamento_baixo_mc();
+	this.instance_16.setTransform(1122.5,511.6,1,1,0,0,0,121.4,180.6);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_16).wait(1));
 
-	// estacionamento_b_mc
-	this.instance_17 = new lib.estacionamento_b_mc();
-	this.instance_17.setTransform(477.6,757.25,1,1,0,0,0,101.4,150.2);
+	// estacionamento_h_mc
+	this.instance_17 = new lib.estacionamento_h_mc();
+	this.instance_17.setTransform(834.05,490.15,1,1,0,0,0,230.2,366.3);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_17).wait(1));
 
-	// estacionamento_eng_mc
-	this.instance_18 = new lib.estacionamento_eng_mc();
-	this.instance_18.setTransform(561.1,320.7,1,1,0,0,0,175.2,162.8);
+	// estacionamento_b_mc
+	this.instance_18 = new lib.estacionamento_b_mc();
+	this.instance_18.setTransform(477.6,757.25,1,1,0,0,0,101.4,150.2);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_18).wait(1));
+
+	// estacionamento_eng_mc
+	this.instance_19 = new lib.estacionamento_eng_mc();
+	this.instance_19.setTransform(561.1,320.7,1,1,0,0,0,175.2,162.8);
+
+	this.timeline.addTween(cjs.Tween.get(this.instance_19).wait(1));
+
+	// limite_mc
+	this.instance_20 = new lib.limite_mc();
+	this.instance_20.setTransform(1093.55,485.7,1,1,0,0,0,824,535.9);
+
+	this.timeline.addTween(cjs.Tween.get(this.instance_20).wait(1));
 
 	// cimento
 	this.shape_10 = new cjs.Shape();
@@ -1482,7 +1621,7 @@ lib.properties = {
 	color: "#FFFFFF",
 	opacity: 1.00,
 	manifest: [
-		{src:"images/isep_game_atlas_1.png?1765068675944", id:"isep_game_atlas_1"}
+		{src:"images/isep_game_atlas_1.png?1767412807310", id:"isep_game_atlas_1"}
 	],
 	preloads: []
 };
