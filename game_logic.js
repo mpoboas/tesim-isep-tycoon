@@ -17,7 +17,7 @@ var COMP_ID = "C4EE32689A47AB45842BDB0D0E7EC980";
 // ESTADO DO JOGO (GAME STATE)
 // ============================================
 var gameState = {
-    money: 1000,
+    money: 100000,
     students: 0,
     sustainability: 0,
     buildings: {} // Será preenchido com dados do JSON
@@ -243,7 +243,10 @@ function setupBuildingInteraction(mc, id) {
     mc.buildingId = id;
     mc.cursor = "pointer";
     mc.mouseChildren = false;
-    mc.gotoAndStop(gameState.buildings[id].unlocked ? 1 : 0);
+    mc.buildingId = id;
+    mc.cursor = "pointer";
+    mc.mouseChildren = false;
+    updateBuildingGraphics(id);
 
     var brightnessFilter = new createjs.ColorMatrixFilter([
         1.2, 0, 0, 0, 10,
@@ -253,12 +256,21 @@ function setupBuildingInteraction(mc, id) {
     ]);
 
     mc.on("mouseover", function () {
+        // Desativar hover para estacionamentos já comprados
+        var isEstacionamento = id.toLowerCase().includes("estacionamento");
+        var isUnlocked = gameState.buildings[id].unlocked;
+
+        if (isEstacionamento && isUnlocked) {
+            // Estacionamento comprado - sem efeito de hover
+            return;
+        }
+
         mc.scaleX = mc.scaleY = 1.05;
         mc.alpha = 0.9;
         mc.filters = [brightnessFilter];
         mc.cache(0, 0, mc.nominalBounds.width, mc.nominalBounds.height);
 
-        if (!gameState.buildings[id].unlocked && hoverInstance) {
+        if (!isUnlocked && hoverInstance) {
             hoverInstance.visible = true;
             updateHoverData(id);
         }
@@ -294,7 +306,9 @@ function handleBuildingClick(id, mc) {
             gameState.money -= bData.unlock_cost;
             bState.unlocked = true;
             if (bData.students_bonus) gameState.students += bData.students_bonus;
-            mc.gotoAndStop(1);
+            bState.unlocked = true;
+            if (bData.students_bonus) gameState.students += bData.students_bonus;
+            updateBuildingGraphics(id);
             createjs.Sound.play("levelUpSound");
             updateUI();
             createjs.Tween.get(mc).to({ scaleX: 1.2, scaleY: 1.2 }, 100).to({ scaleX: 1, scaleY: 1 }, 200, createjs.Ease.bounceOut);
@@ -372,13 +386,25 @@ function updateUpgradeSection(mc, upgradesList, currentLevel, multiplier) {
     if (currentLevel < 3) {
         var nextUpgrade = upgradesList[currentLevel];
         var cost = Math.floor(nextUpgrade.base_cost * GLOBAL_MULTIPLIER * multiplier);
-        if (fields.title) fields.title.text = nextUpgrade.title;
-        if (fields.desc) fields.desc.text = nextUpgrade.desc;
+        if (fields.title) {
+            fields.title.text = nextUpgrade.title;
+            fields.title.lineWidth = 250;
+        }
+        if (fields.desc) {
+            fields.desc.text = nextUpgrade.desc;
+            fields.desc.lineWidth = 150;
+        }
         if (fields.price) fields.price.text = cost + "€";
         if (fields.btn) fields.btn.text = "COMPRAR";
     } else {
-        if (fields.title) fields.title.text = "MÁXIMO";
-        if (fields.desc) fields.desc.text = "Nível máximo atingido.";
+        if (fields.title) {
+            fields.title.text = "MÁXIMO";
+            fields.title.lineWidth = 250;
+        }
+        if (fields.desc) {
+            fields.desc.text = "Nível máximo atingido.";
+            fields.desc.lineWidth = 200;
+        }
         if (fields.price) fields.price.text = "---";
         if (fields.btn) fields.btn.text = "MAX";
     }
@@ -416,11 +442,43 @@ function buyUpgrade(type) {
         if (upgradeInfo.students_bonus) gameState.students += upgradeInfo.students_bonus;
         if (upgradeInfo.sustain_bonus) gameState.sustainability += upgradeInfo.sustain_bonus;
         if (gameState.sustainability > 100) gameState.sustainability = 100;
+
+        // Atualizar gráfico se foi upgrade de sustentabilidade
+        if (type === "sustain") {
+            updateBuildingGraphics(id);
+        }
+
         createjs.Sound.play("levelUpSound");
         updateUI();
         updateUpgradePanelUI();
     } else {
         showAlert();
+    }
+}
+
+// ============================================
+// HELPERS GRÁFICOS
+// ============================================
+/**
+ * Atualiza o frame do edifício com base no estado e nível de sustentabilidade.
+ * Frame 0: Bloqueado
+ * Frame 1: Desbloqueado (Base / Sustentabilidade 0)
+ * Frame 2: Sustentabilidade 1
+ * Frame 3: Sustentabilidade 2
+ * Frame 4: Sustentabilidade 3
+ */
+function updateBuildingGraphics(id) {
+    var mc = findInstanceOnStage(id);
+    if (!mc) return;
+
+    var state = gameState.buildings[id];
+
+    if (!state.unlocked) {
+        mc.gotoAndStop(0); // Frame 1 (Bloqueado)
+    } else {
+        // Frame 2 (Base) + Nível de Sustentabilidade (0 a 3)
+        var frameIndex = 1 + (state.sustain_level || 0);
+        mc.gotoAndStop(frameIndex);
     }
 }
 
