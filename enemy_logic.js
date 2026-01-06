@@ -106,18 +106,9 @@ function spawnEnemy() {
     enemy._state = "idle";
     enemy._frame = 0;
 
-    // Adicionar inimigo e garantir que carro fica à frente
+    // Adicionar inimigo ao stage
     exportRoot.addChild(enemy);
 
-    // Mover o carro para ficar à frente do inimigo
-    if (window.carInstance) {
-        var carIndex = exportRoot.getChildIndex(window.carInstance);
-        var enemyIndex = exportRoot.getChildIndex(enemy);
-        if (carIndex >= 0 && enemyIndex >= 0 && enemyIndex > carIndex) {
-            // Trocar posições: mover carro para depois do inimigo
-            exportRoot.setChildIndex(window.carInstance, enemyIndex);
-        }
-    }
     activeEnemies.push(enemy);
     lastSpawnTime = Date.now();
 

@@ -65,66 +65,188 @@ function getLib() {
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
+var menuInstance = null;
+var gameStarted = false;
+
 function initGame() {
     console.log("========================================");
-    console.log("[ISEP Tycoon] A iniciar o jogo...");
+    console.log("[ISEP Tycoon] A iniciar...");
 
     if (typeof exportRoot === 'undefined' || exportRoot === null) {
         console.error("[ISEP Tycoon] ERRO: exportRoot não definido!");
         return;
     }
 
-    // Tentar garantir que o Stage tem o mouse over ligado, mesmo que o HTML seja overwritten
     if (window.stage) {
         window.stage.enableMouseOver(20);
     }
 
-    // 1. Carregar Sons
+    // Carregar Sons primeiro
     loadGameSounds();
 
-    // 2. Carregar Dados (JSON)
+    // Carregar dados e depois mostrar menu
     loadBuildingsData(function () {
-        // 3. Inicializar Estado dos Edifícios
         initGameState();
 
-        // 4. Configurar Painel de Alerta
-        initAlertPanel();
+        // Parar todas as animações dos edifícios imediatamente
+        stopAllBuildingAnimations();
 
-        // 5. Configurar Tooltip de Hover
-        initHoverTooltip();
-
-        // 6. Configurar Painel de Upgrades
-        initUpgradePanel();
-
-        // 7. Inicializar UI
-        initUI();
-
-        // 8. Configurar Edifícios no Stage
-        initBuildings();
-
-        // 9. Iniciar Loop de Economia
-        startGameLoop();
-
-        // 10. Listener Global de Mouse para o Hover seguir o rato
-        setupGlobalMouseMove();
-
-        // 11. Inicializar Carro
-        if (window.initCar) initCar();
-
-        // 12. Inicializar Sistema de Inimigos
-        if (window.initEnemySystem) initEnemySystem();
-
-        // 13. Iniciar Soundtrack
-        initSoundtrack();
-
-        console.log("[ISEP Tycoon] Jogo iniciado com sucesso!");
+        showMainMenu();
     });
+}
+
+function showMainMenu() {
+    menuInstance = findInstanceOnStage("menu_mc");
+
+    if (!menuInstance) {
+        console.log("[Menu] menu_mc não encontrado, iniciando jogo diretamente");
+        startGameAfterMenu();
+        return;
+    }
+
+    console.log("[Menu] Menu principal encontrado");
+
+    // Parar animação do jogo enquanto está no menu
+    exportRoot.stop();
+
+    // Garantir que o menu está visível e no topo
+    menuInstance.visible = true;
+    menuInstance.alpha = 1;
+    exportRoot.setChildIndex(menuInstance, exportRoot.numChildren - 1);
+
+    // Iniciar animação de intro (frames 0-57)
+    menuInstance.gotoAndPlay(0);
+
+    // Configurar botões
+    var newGameBtn = menuInstance.new_game_btn;
+    var continueBtn = menuInstance.continue_game_btn;
+
+    // Configurar botão Novo Jogo
+    if (newGameBtn) {
+        newGameBtn.tickEnabled = false;
+        newGameBtn.paused = true;
+        newGameBtn.gotoAndStop(0); // Frame 1 = ativado
+        newGameBtn.cursor = "pointer";
+        newGameBtn.mouseChildren = false;
+
+        if (newGameBtn.text) newGameBtn.text.text = "NOVO JOGO";
+
+        newGameBtn.on("click", function () {
+            if (!gameStarted) {
+                gameStarted = true;
+                fadeOutMenu();
+            }
+        });
+    }
+
+    // Configurar botão Continuar (desativado)
+    if (continueBtn) {
+        continueBtn.tickEnabled = false;
+        continueBtn.paused = true;
+        continueBtn.gotoAndStop(1); // Frame 2 = desativado
+        continueBtn.cursor = "default";
+        continueBtn.mouseChildren = false;
+        continueBtn.mouseEnabled = false;
+
+        if (continueBtn.text) continueBtn.text.text = "CONTINUAR";
+    }
+
+    // Listener para loop da animação do menu
+    var buttonsConfigured = false;
+    menuInstance.on("tick", function () {
+        // Reconfigurar botões quando aparecem no stage (frame 58+)
+        if (!buttonsConfigured && menuInstance.currentFrame >= 58) {
+            buttonsConfigured = true;
+
+            var newBtn = menuInstance.new_game_btn;
+            var contBtn = menuInstance.continue_game_btn;
+
+            if (newBtn) {
+                newBtn.tickEnabled = false;
+                newBtn.paused = true;
+                newBtn.gotoAndStop(0);
+                if (newBtn.text) newBtn.text.text = "NOVO JOGO";
+            }
+            if (contBtn) {
+                contBtn.tickEnabled = false;
+                contBtn.paused = true;
+                contBtn.gotoAndStop(1);
+                if (contBtn.text) contBtn.text.text = "CONTINUAR";
+            }
+        }
+
+        if (menuInstance.currentFrame >= 57 && menuInstance.currentFrame < 58) {
+            menuInstance.gotoAndPlay(58);
+        } else if (menuInstance.currentFrame >= 114) {
+            menuInstance.gotoAndPlay(58);
+        }
+    });
+}
+
+function fadeOutMenu() {
+    if (!menuInstance) {
+        startGameAfterMenu();
+        return;
+    }
+
+    console.log("[Menu] Fade out...");
+
+    // Fade to black (diminuir alpha)
+    createjs.Tween.get(menuInstance)
+        .to({ alpha: 0 }, 1000, createjs.Ease.quadIn)
+        .call(function () {
+            menuInstance.visible = false;
+            menuInstance.stop();
+            startGameAfterMenu();
+        });
+}
+
+function startGameAfterMenu() {
+    console.log("[ISEP Tycoon] Iniciando jogo...");
+
+    // Tocar theme song
+    createjs.Sound.play("themeSong", { volume: SOUNDTRACK_VOLUME });
+
+    // 4. Configurar Painel de Alerta
+    initAlertPanel();
+
+    // 5. Configurar Tooltip de Hover
+    initHoverTooltip();
+
+    // 6. Configurar Painel de Upgrades
+    initUpgradePanel();
+
+    // 7. Inicializar UI
+    initUI();
+
+    // 8. Configurar Edifícios no Stage
+    initBuildings();
+
+    // 9. Iniciar Loop de Economia
+    startGameLoop();
+
+    // 10. Listener Global de Mouse para o Hover seguir o rato
+    setupGlobalMouseMove();
+
+    // 11. Inicializar Carro
+    if (window.initCar) initCar();
+
+    // 12. Inicializar Sistema de Inimigos
+    if (window.initEnemySystem) initEnemySystem();
+
+    // 13. Iniciar Soundtrack
+    initSoundtrack();
+
+    console.log("[ISEP Tycoon] Jogo iniciado com sucesso!");
 }
 
 function loadGameSounds() {
     // SFX
     createjs.Sound.registerSound("assets/sfx/building_level_up.mp3", "levelUpSound");
     createjs.Sound.registerSound("assets/sfx/wrong.mp3", "wrongSound");
+
+    // Theme Song
+    createjs.Sound.registerSound("assets/theme_song.mp3", "themeSong");
 
     // Soundtrack
     for (var i = 0; i < soundtrackFiles.length; i++) {
@@ -291,7 +413,31 @@ function updateUI() {
     if (!uiInstance) return;
     if (uiInstance.money_txt) uiInstance.money_txt.text = Math.floor(gameState.money) + "€";
     if (uiInstance.students_txt) uiInstance.students_txt.text = gameState.students + " Alunos";
+
+    // Calcular sustentabilidade dinamicamente
+    gameState.sustainability = calculateSustainability();
     if (uiInstance.sustain_txt) uiInstance.sustain_txt.text = gameState.sustainability + "%";
+}
+
+function calculateSustainability() {
+    var totalPossible = 0;
+    var totalAchieved = 0;
+
+    for (var id in buildingsData) {
+        var data = buildingsData[id];
+        var state = gameState.buildings[id];
+
+        // Só contar edifícios que têm upgrades de sustentabilidade
+        if (data.sustain_upgrades && data.sustain_upgrades.length > 0) {
+            totalPossible += 3; // Máximo 3 níveis por edifício
+            if (state && state.unlocked) {
+                totalAchieved += (state.sustain_level || 0);
+            }
+        }
+    }
+
+    if (totalPossible === 0) return 0;
+    return Math.floor((totalAchieved / totalPossible) * 100);
 }
 
 function initAlertPanel() {
@@ -570,8 +716,7 @@ function buyUpgrade(type) {
         gameState.money -= cost;
         state[levelKey]++;
         if (upgradeInfo.students_bonus) gameState.students += upgradeInfo.students_bonus;
-        if (upgradeInfo.sustain_bonus) gameState.sustainability += upgradeInfo.sustain_bonus;
-        if (gameState.sustainability > 100) gameState.sustainability = 100;
+        // Sustentabilidade é calculada dinamicamente, não acumulada
 
         // Atualizar gráfico se foi upgrade de sustentabilidade
         if (type === "sustain") {
@@ -610,6 +755,38 @@ function updateBuildingGraphics(id) {
         var frameIndex = 1 + (state.sustain_level || 0);
         mc.gotoAndStop(frameIndex);
     }
+}
+
+/**
+ * Para todas as animações do jogo no frame 0
+ * Chamado imediatamente quando o jogo carrega, antes do menu
+ */
+function stopAllBuildingAnimations() {
+    // Parar edifícios
+    for (var id in buildingsData) {
+        var mc = findInstanceOnStage(id);
+        if (mc) {
+            mc.stop();
+            mc.gotoAndStop(0);
+        }
+    }
+
+    // Parar UI
+    var uiMc = findInstanceOnStage("ui_mc");
+    if (uiMc) {
+        uiMc.stop();
+        uiMc.gotoAndStop(0);
+    }
+
+    // Parar e esconder painel de upgrades
+    var upgradeMc = findInstanceOnStage("upgrade_mc");
+    if (upgradeMc) {
+        upgradeMc.stop();
+        upgradeMc.gotoAndStop(0);
+        upgradeMc.x = -800; // Esconder fora do ecrã
+    }
+
+    console.log("[ISEP Tycoon] Todas as animações paradas");
 }
 
 // ============================================
