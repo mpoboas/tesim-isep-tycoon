@@ -39,6 +39,12 @@ var gameTickInterval = null;
 var lastStudentUpdateTime = 0;
 var currentStudentDelta = 0;
 var alunosInfoInstance = null;
+
+// Sistema de Auto-Save
+var SAVE_KEY = "isep_tycoon_save";
+var AUTO_SAVE_INTERVAL = 15000; // 15 segundos
+var autoSaveIntervalId = null;
+var isLoadingGame = false;
 var isHoveringUI = false;
 
 // Sistema de Soundtrack
@@ -117,6 +123,13 @@ function showMainMenu() {
     // Iniciar animação de intro (frames 0-57)
     menuInstance.gotoAndPlay(0);
 
+    // Tocar theme song quando o menu abre
+    createjs.Sound.play("themeSong", { volume: SOUNDTRACK_VOLUME, loop: -1 });
+
+    // Verificar se há jogo guardado
+    var savedGameExists = hasSavedGame();
+    console.log("[Menu] Jogo guardado encontrado:", savedGameExists);
+
     // Configurar botões
     var newGameBtn = menuInstance.new_game_btn;
     var continueBtn = menuInstance.continue_game_btn;
@@ -134,21 +147,40 @@ function showMainMenu() {
         newGameBtn.on("click", function () {
             if (!gameStarted) {
                 gameStarted = true;
+                isLoadingGame = false;
+                clearSavedGame(); // Limpar dados guardados ao iniciar novo jogo
                 fadeOutMenu();
             }
         });
     }
 
-    // Configurar botão Continuar (desativado)
+    // Configurar botão Continuar
     if (continueBtn) {
         continueBtn.tickEnabled = false;
         continueBtn.paused = true;
-        continueBtn.gotoAndStop(1); // Frame 2 = desativado
-        continueBtn.cursor = "default";
         continueBtn.mouseChildren = false;
-        continueBtn.mouseEnabled = false;
 
         if (continueBtn.text) continueBtn.text.text = "CONTINUAR";
+
+        if (savedGameExists) {
+            // Ativar botão se há jogo guardado
+            continueBtn.gotoAndStop(0); // Frame 1 = ativado
+            continueBtn.cursor = "pointer";
+            continueBtn.mouseEnabled = true;
+
+            continueBtn.on("click", function () {
+                if (!gameStarted) {
+                    gameStarted = true;
+                    isLoadingGame = true; // Marcar que estamos a carregar jogo
+                    fadeOutMenu();
+                }
+            });
+        } else {
+            // Desativar botão se não há jogo guardado
+            continueBtn.gotoAndStop(1); // Frame 2 = desativado
+            continueBtn.cursor = "default";
+            continueBtn.mouseEnabled = false;
+        }
     }
 
     // Listener para loop da animação do menu
@@ -170,7 +202,8 @@ function showMainMenu() {
             if (contBtn) {
                 contBtn.tickEnabled = false;
                 contBtn.paused = true;
-                contBtn.gotoAndStop(1);
+                // Manter o estado correto baseado em se há jogo guardado
+                contBtn.gotoAndStop(savedGameExists ? 0 : 1);
                 if (contBtn.text) contBtn.text.text = "CONTINUAR";
             }
         }
@@ -204,8 +237,14 @@ function fadeOutMenu() {
 function startGameAfterMenu() {
     console.log("[ISEP Tycoon] Iniciando jogo...");
 
-    // Tocar theme song
-    createjs.Sound.play("themeSong", { volume: SOUNDTRACK_VOLUME });
+    // Carregar jogo guardado se estivermos a continuar
+    if (isLoadingGame) {
+        if (loadGame()) {
+            console.log("[ISEP Tycoon] Jogo carregado do localStorage.");
+        } else {
+            console.log("[ISEP Tycoon] Falha ao carregar, iniciando novo jogo.");
+        }
+    }
 
     // 4. Configurar Painel de Alerta
     initAlertPanel();
@@ -222,6 +261,11 @@ function startGameAfterMenu() {
     // 8. Configurar Edifícios no Stage
     initBuildings();
 
+    // 8.1 Atualizar gráficos de todos os edifícios (importante para jogos carregados)
+    for (var id in gameState.buildings) {
+        updateBuildingGraphics(id);
+    }
+
     // 9. Iniciar Loop de Economia
     startGameLoop();
 
@@ -236,6 +280,9 @@ function startGameAfterMenu() {
 
     // 13. Iniciar Soundtrack
     initSoundtrack();
+
+    // 14. Iniciar Auto-Save
+    startAutoSave();
 
     console.log("[ISEP Tycoon] Jogo iniciado com sucesso!");
 }
@@ -317,6 +364,104 @@ function initGameState() {
             infra_level: 0,
             sustain_level: 0
         };
+    }
+}
+
+// ============================================
+// SISTEMA DE SAVE/LOAD
+// ============================================
+
+/**
+ * Guarda o estado atual do jogo no localStorage
+ */
+function saveGame() {
+    try {
+        var saveData = {
+            money: gameState.money,
+            students: gameState.students,
+            sustainability: gameState.sustainability,
+            buildings: gameState.buildings,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+        console.log("[ISEP Tycoon] Jogo guardado automaticamente.");
+    } catch (e) {
+        console.error("[ISEP Tycoon] Erro ao guardar jogo:", e);
+    }
+}
+
+/**
+ * Carrega o estado do jogo a partir do localStorage
+ * @returns {boolean} true se carregou com sucesso, false caso contrário
+ */
+function loadGame() {
+    try {
+        var saveData = localStorage.getItem(SAVE_KEY);
+        if (!saveData) return false;
+
+        var data = JSON.parse(saveData);
+
+        // Restaurar estado do jogo
+        gameState.money = data.money || 1000;
+        gameState.students = data.students || 0;
+        gameState.sustainability = data.sustainability || 0;
+
+        // Restaurar estado dos edifícios
+        for (var id in data.buildings) {
+            if (gameState.buildings[id]) {
+                gameState.buildings[id] = data.buildings[id];
+            }
+        }
+
+        console.log("[ISEP Tycoon] Jogo carregado com sucesso.");
+        return true;
+    } catch (e) {
+        console.error("[ISEP Tycoon] Erro ao carregar jogo:", e);
+        return false;
+    }
+}
+
+/**
+ * Verifica se existe um jogo guardado no localStorage
+ * @returns {boolean} true se existe, false caso contrário
+ */
+function hasSavedGame() {
+    try {
+        var saveData = localStorage.getItem(SAVE_KEY);
+        return saveData !== null;
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Remove o jogo guardado do localStorage
+ */
+function clearSavedGame() {
+    try {
+        localStorage.removeItem(SAVE_KEY);
+        console.log("[ISEP Tycoon] Dados guardados removidos.");
+    } catch (e) {
+        console.error("[ISEP Tycoon] Erro ao remover dados guardados:", e);
+    }
+}
+
+/**
+ * Inicia o sistema de auto-save
+ */
+function startAutoSave() {
+    if (autoSaveIntervalId) clearInterval(autoSaveIntervalId);
+    autoSaveIntervalId = setInterval(saveGame, AUTO_SAVE_INTERVAL);
+    console.log("[ISEP Tycoon] Auto-save iniciado (a cada " + (AUTO_SAVE_INTERVAL / 1000) + " segundos).");
+}
+
+/**
+ * Para o sistema de auto-save
+ */
+function stopAutoSave() {
+    if (autoSaveIntervalId) {
+        clearInterval(autoSaveIntervalId);
+        autoSaveIntervalId = null;
     }
 }
 
@@ -856,6 +1001,8 @@ function calculateStudentGain() {
 
 function gameOver() {
     clearInterval(gameTickInterval);
+    stopAutoSave(); // Parar auto-save
+    clearSavedGame(); // Limpar dados guardados ao perder
     alert("GAME OVER! Os estudantes abandonaram o ISEP devido à praxe descontrolada!");
     location.reload();
 }
