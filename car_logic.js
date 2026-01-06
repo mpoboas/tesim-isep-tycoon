@@ -275,3 +275,5 @@ function canMoveTo(nx, ny) {
     }
     return true;
 }
+
+// Nota: Lógica de inimigos movida para enemy_logic.js

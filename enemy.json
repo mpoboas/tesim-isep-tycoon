@@ -1,0 +1,55 @@
+{
+    "spawn_points": [
+        {
+            "x": 424,
+            "y": 808
+        },
+        {
+            "x": 400,
+            "y": 460
+        },
+        {
+            "x": 994,
+            "y": 66
+        },
+        {
+            "x": 1543,
+            "y": 66
+        },
+        {
+            "x": 1534,
+            "y": 400
+        },
+        {
+            "x": 931,
+            "y": 525
+        },
+        {
+            "x": 652,
+            "y": 560
+        },
+        {
+            "x": 841,
+            "y": 912
+        },
+        {
+            "x": 1786,
+            "y": 850
+        }
+    ],
+    "base_stats": {
+        "spawn_rate_ms": 30000,
+        "damage_per_enemy": 10,
+        "min_students_to_spawn": 100,
+        "max_enemies": 1
+    },
+    "progression": {
+        "spawn_rate_reduction_per_building": 500,
+        "spawn_rate_min_ms": 5000,
+        "max_enemies_increase_at_students": [
+            50,
+            100
+        ],
+        "comment": "At 50 students max_enemies becomes 2, at 100 becomes 3"
+    }
+}

@@ -7,8 +7,9 @@
 // CONFIGURAÇÃO GLOBAL
 // ============================================
 var GLOBAL_MULTIPLIER = 1.0;
-var INCOME_PER_STUDENT = 0.5; // Dinheiro gerado por aluno por tick
-var TICK_RATE = 1000; // 1 segundo por tick
+var INCOME_PER_STUDENT = 0.2; // Reduzido de 0.5 para tornar economia mais lenta
+var TICK_RATE = 1000;
+var STUDENT_UPDATE_INTERVAL = 5000; // 5 segundos para ganho/perda de alunos
 
 // ID da composição do Adobe Animate
 var COMP_ID = "C4EE32689A47AB45842BDB0D0E7EC980";
@@ -17,7 +18,7 @@ var COMP_ID = "C4EE32689A47AB45842BDB0D0E7EC980";
 // ESTADO DO JOGO (GAME STATE)
 // ============================================
 var gameState = {
-    money: 100000,
+    money: 1000,
     students: 0,
     sustainability: 0,
     buildings: {} // Será preenchido com dados do JSON
@@ -34,8 +35,22 @@ var hoverInstance = null; // Instância do tooltip de hover
 var currentOpenBuildingId = null;
 var isHoveringLocked = false;
 
-// Timer do loop de economia
 var gameTickInterval = null;
+var lastStudentUpdateTime = 0;
+var currentStudentDelta = 0;
+var alunosInfoInstance = null;
+var isHoveringUI = false;
+
+// Sistema de Soundtrack
+var soundtrackFiles = [
+    "assets/soundtrack/Soundtrack_1.mp3",
+    "assets/soundtrack/Soundtrack_2.mp3",
+    "assets/soundtrack/Soundtrack_3.mp3"
+];
+var lastPlayedTrack = -1;
+var soundtrackInstance = null;
+var SOUNDTRACK_VOLUME = 0.02;
+var SFX_VOLUME = 0.2;
 
 // Helper para obter a library (lib) de forma robusta
 function getLib() {
@@ -96,13 +111,62 @@ function initGame() {
         // 11. Inicializar Carro
         if (window.initCar) initCar();
 
+        // 12. Inicializar Sistema de Inimigos
+        if (window.initEnemySystem) initEnemySystem();
+
+        // 13. Iniciar Soundtrack
+        initSoundtrack();
+
         console.log("[ISEP Tycoon] Jogo iniciado com sucesso!");
     });
 }
 
 function loadGameSounds() {
+    // SFX
     createjs.Sound.registerSound("assets/sfx/building_level_up.mp3", "levelUpSound");
     createjs.Sound.registerSound("assets/sfx/wrong.mp3", "wrongSound");
+
+    // Soundtrack
+    for (var i = 0; i < soundtrackFiles.length; i++) {
+        createjs.Sound.registerSound(soundtrackFiles[i], "soundtrack_" + i);
+    }
+}
+
+function initSoundtrack() {
+    // Começar com Soundtrack_1 após 10 segundos
+    setTimeout(function () {
+        playTrack(0);
+    }, 10000);
+}
+
+function playTrack(index) {
+    if (soundtrackInstance) {
+        soundtrackInstance.stop();
+    }
+
+    lastPlayedTrack = index;
+    soundtrackInstance = createjs.Sound.play("soundtrack_" + index, { volume: SOUNDTRACK_VOLUME });
+
+    if (soundtrackInstance) {
+        soundtrackInstance.on("complete", function () {
+            scheduleNextTrack();
+        });
+    }
+}
+
+function scheduleNextTrack() {
+    // Delay random entre 1:30 (90s) e 3:00 (180s)
+    var delayMs = (90 + Math.random() * 90) * 1000;
+
+    setTimeout(function () {
+        // Escolher track random que não seja a mesma
+        var nextIndex;
+        do {
+            nextIndex = Math.floor(Math.random() * soundtrackFiles.length);
+        } while (nextIndex === lastPlayedTrack && soundtrackFiles.length > 1);
+
+        playTrack(nextIndex);
+    }, delayMs);
 }
 
 function loadBuildingsData(callback) {
@@ -154,7 +218,73 @@ function findInstanceOnStage(id) {
 // ============================================
 function initUI() {
     uiInstance = findInstanceOnStage("ui_mc");
+
+    if (uiInstance) {
+        uiInstance.mouseEnabled = true;
+        uiInstance.mouseChildren = true;
+        uiInstance.cursor = "pointer";
+
+        // Encontrar alunos_info_mc
+        alunosInfoInstance = uiInstance.instance;
+
+        // Fallback: procurar nos children
+        if (!alunosInfoInstance && uiInstance.children) {
+            for (var i = 0; i < uiInstance.children.length; i++) {
+                var child = uiInstance.children[i];
+                if (child.student_gain_txt) {
+                    alunosInfoInstance = child;
+                    break;
+                }
+            }
+        }
+
+        if (alunosInfoInstance) {
+            alunosInfoInstance.y = 30;
+            alunosInfoInstance.visible = true;
+            alunosInfoInstance.mouseEnabled = false;
+        }
+
+        uiInstance.on("mouseover", function () {
+            isHoveringUI = true;
+            if (alunosInfoInstance) {
+                updateAlunosInfo();
+                createjs.Tween.get(alunosInfoInstance, { override: true })
+                    .to({ y: 90 }, 300, createjs.Ease.quadOut);
+            }
+        });
+
+        uiInstance.on("mouseout", function () {
+            isHoveringUI = false;
+            if (alunosInfoInstance) {
+                createjs.Tween.get(alunosInfoInstance, { override: true })
+                    .to({ y: 30 }, 200, createjs.Ease.quadIn);
+            }
+        });
+    }
+
     updateUI();
+}
+
+function updateAlunosInfo() {
+    if (!alunosInfoInstance) return;
+
+    // Calcular valores actuais (não usar o cached)
+    var studentGain = calculateStudentGain();
+    var studentLoss = window.getEnemyDamage ? getEnemyDamage() : 0;
+    var delta = studentGain - studentLoss;
+
+    // O Animate usa o mesmo campo student_gain_txt para ambos os frames
+    if (delta >= 0) {
+        alunosInfoInstance.gotoAndStop(0); // Frame 1 = Gain (verde)
+        if (alunosInfoInstance.student_gain_txt) {
+            alunosInfoInstance.student_gain_txt.text = "+" + delta;
+        }
+    } else {
+        alunosInfoInstance.gotoAndStop(1); // Frame 2 = Loss (vermelho)
+        if (alunosInfoInstance.student_gain_txt) {
+            alunosInfoInstance.student_gain_txt.text = delta;
+        }
+    }
 }
 
 function updateUI() {
@@ -213,7 +343,7 @@ function setupGlobalMouseMove() {
 function showAlert() {
     if (!alertPanel) return;
     exportRoot.setChildIndex(alertPanel, exportRoot.numChildren - 1);
-    createjs.Sound.play("wrongSound");
+    createjs.Sound.play("wrongSound", { volume: SFX_VOLUME });
     createjs.Tween.get(alertPanel, { override: true })
         .to({ x: 786.95, y: 23.6 }, 500, createjs.Ease.cubicOut)
         .wait(2000)
@@ -309,7 +439,7 @@ function handleBuildingClick(id, mc) {
             bState.unlocked = true;
             if (bData.students_bonus) gameState.students += bData.students_bonus;
             updateBuildingGraphics(id);
-            createjs.Sound.play("levelUpSound");
+            createjs.Sound.play("levelUpSound", { volume: SFX_VOLUME });
             updateUI();
             createjs.Tween.get(mc).to({ scaleX: 1.2, scaleY: 1.2 }, 100).to({ scaleX: 1, scaleY: 1 }, 200, createjs.Ease.bounceOut);
         } else {
@@ -448,7 +578,7 @@ function buyUpgrade(type) {
             updateBuildingGraphics(id);
         }
 
-        createjs.Sound.play("levelUpSound");
+        createjs.Sound.play("levelUpSound", { volume: SFX_VOLUME });
         updateUI();
         updateUpgradePanelUI();
     } else {
@@ -491,12 +621,64 @@ function startGameLoop() {
 }
 
 function gameTick() {
+    // NOTA: updateEnemies agora corre no Ticker, não aqui
+
+
+    // Dinheiro (cada tick)
     var income = gameState.students * INCOME_PER_STUDENT;
     var maintenanceFactor = 1 - (gameState.sustainability / 100);
     var maintenanceCost = (gameState.students * 0.1) * maintenanceFactor;
     var profit = income - maintenanceCost;
     if (profit > 0) {
         gameState.money += profit;
-        updateUI();
     }
+
+    // Alunos (cada 5 segundos)
+    var now = Date.now();
+    if (now - lastStudentUpdateTime >= STUDENT_UPDATE_INTERVAL) {
+        lastStudentUpdateTime = now;
+
+        // Calcular ganho de alunos base
+        var studentGain = calculateStudentGain();
+
+        // Calcular perda por inimigos
+        var studentLoss = 0;
+        if (window.getEnemyDamage) studentLoss = getEnemyDamage();
+
+        currentStudentDelta = studentGain - studentLoss;
+        gameState.students += currentStudentDelta;
+
+        if (gameState.students < 0) gameState.students = 0;
+
+        // Game Over check
+        if (gameState.students <= 0 && window.getActiveEnemyCount && getActiveEnemyCount() > 0) {
+            gameOver();
+        }
+    }
+
+    updateUI();
+
+    // Atualizar info de alunos se estiver em hover
+    if (isHoveringUI) {
+        updateAlunosInfo();
+    }
+}
+
+function calculateStudentGain() {
+    var gain = 0;
+    for (var id in gameState.buildings) {
+        var b = gameState.buildings[id];
+        if (b.unlocked) {
+            gain += 0.5; // Reduzido de 1 para 0.5 por edifício
+            gain += (b.course_level || 0) * 0.2; // Reduzido de 0.5
+            gain += (b.infra_level || 0) * 0.1; // Reduzido de 0.3
+        }
+    }
+    return Math.floor(gain);
+}
+
+function gameOver() {
+    clearInterval(gameTickInterval);
+    alert("GAME OVER! Os estudantes abandonaram o ISEP devido à praxe descontrolada!");
+    location.reload();
 }
