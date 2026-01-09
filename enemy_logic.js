@@ -1,6 +1,5 @@
 /**
  * ISEP Tycoon - Enemy Logic
- * Sistema de inimigos (Praxe) com spawn dinâmico
  */
 
 var enemyConfig = null;
@@ -8,14 +7,13 @@ var activeEnemies = [];
 var lastSpawnTime = 0;
 var enemyIdCounter = 0;
 
-// Carregar config
 function loadEnemyConfig(callback) {
     var req = new XMLHttpRequest();
     req.open("GET", "enemy.json", true);
     req.onload = function () {
         if (req.status === 200) {
             enemyConfig = JSON.parse(req.responseText);
-            console.log("[Enemy] Config loaded.");
+            console.log("[Enemy] Config loaded");
             if (callback) callback();
         }
     };
@@ -24,9 +22,8 @@ function loadEnemyConfig(callback) {
 
 function initEnemySystem() {
     loadEnemyConfig(function () {
-        console.log("[Enemy] System ready.");
+        console.log("[Enemy] System ready");
 
-        // Adicionar ao Ticker para updates a 60fps
         createjs.Ticker.addEventListener("tick", function (event) {
             if (!event.paused) {
                 updateEnemies();
@@ -80,35 +77,29 @@ function spawnEnemy() {
     if (!canSpawnEnemy()) return;
 
     if (!window.lib || !window.lib.praxe_mc) {
-        console.log("[Enemy] lib.praxe_mc not available");
+        console.log("[Enemy] praxe_mc not available");
         return;
     }
 
-    // Obter spawn point inteligente
     var point = getSmartSpawnPoint();
     if (!point) {
-        console.log("[Enemy] No valid spawn point available");
+        console.log("[Enemy] No spawn point available");
         return;
     }
 
-    // Create instance
     var enemy = new window.lib.praxe_mc();
     enemy.name = "praxe_" + (++enemyIdCounter);
     enemy.x = point.x;
     enemy.y = point.y;
-    enemy._spawnPoint = point; // Guardar referência ao spawn point
+    enemy._spawnPoint = point;
 
-    // Parar animação automática
     enemy.stop();
     enemy.gotoAndStop(0);
 
-    // Estado do inimigo
     enemy._state = "idle";
     enemy._frame = 0;
 
-    // Adicionar inimigo ao stage
     exportRoot.addChild(enemy);
-
     activeEnemies.push(enemy);
     lastSpawnTime = Date.now();
 
@@ -118,7 +109,7 @@ function spawnEnemy() {
 function getSmartSpawnPoint() {
     var allPoints = enemyConfig.spawn_points;
 
-    // Filtrar pontos ocupados
+    // filter occupied points
     var availablePoints = allPoints.filter(function (point) {
         for (var i = 0; i < activeEnemies.length; i++) {
             var enemy = activeEnemies[i];
@@ -131,11 +122,10 @@ function getSmartSpawnPoint() {
 
     if (availablePoints.length === 0) return null;
 
-    // Posição do carro (ou centro se não existir)
     var carX = window.carInstance ? window.carInstance.x : 960;
     var carY = window.carInstance ? window.carInstance.y : 540;
 
-    // Calcular distância de cada ponto ao carro
+    // calc distance from car
     var pointsWithDistance = availablePoints.map(function (point) {
         var dx = point.x - carX;
         var dy = point.y - carY;
@@ -145,27 +135,24 @@ function getSmartSpawnPoint() {
         };
     });
 
-    // Ordenar por distância (mais longe primeiro)
+    // sort by distance (furthest first)
     pointsWithDistance.sort(function (a, b) {
         return b.distance - a.distance;
     });
 
-    // Excluir os 3 mais próximos (nunca spawnar lá)
+    // exclude 3 closest
     var excludeCount = Math.min(3, Math.floor(pointsWithDistance.length / 2));
     var validPoints = pointsWithDistance.slice(0, pointsWithDistance.length - excludeCount);
 
     if (validPoints.length === 0) return null;
 
-    // 80% - escolher dos 3 mais distantes
-    // 20% - escolher random dos restantes válidos
+    // 80% pick from furthest 3, 20% random
     var chosen;
     if (Math.random() < 0.8) {
-        // Top 3 mais distantes
         var topCount = Math.min(3, validPoints.length);
         var topPoints = validPoints.slice(0, topCount);
         chosen = topPoints[Math.floor(Math.random() * topPoints.length)];
     } else {
-        // Random dos válidos (excluindo os 3 mais próximos)
         chosen = validPoints[Math.floor(Math.random() * validPoints.length)];
     }
 
@@ -173,10 +160,8 @@ function getSmartSpawnPoint() {
 }
 
 function updateEnemies() {
-    // Tentar spawn
     spawnEnemy();
 
-    // Atualizar cada inimigo
     for (var i = activeEnemies.length - 1; i >= 0; i--) {
         var enemy = activeEnemies[i];
         updateSingleEnemy(enemy, i);
@@ -185,13 +170,13 @@ function updateEnemies() {
 
 function updateSingleEnemy(enemy, index) {
     if (enemy._state === "idle") {
-        // Loop idle: frames 0-29
+        // idle loop: frames 0-29
         enemy._frame++;
         if (enemy._frame > 29) enemy._frame = 0;
         enemy.gotoAndStop(enemy._frame);
     }
     else if (enemy._state === "dying") {
-        // Morte: frames 30-59
+        // death: frames 30-59
         enemy._frame++;
         enemy.gotoAndStop(enemy._frame);
 
@@ -205,11 +190,9 @@ function updateSingleEnemy(enemy, index) {
 }
 
 function checkEnemyCollisions() {
-    // Só verificar se o carro está ligado e em movimento
     if (!window.carInstance || !window.carOn) return;
     if (Math.abs(window.carStats.speed) < 0.2) return;
 
-    // Usar a mesma lógica que funciona para edifícios
     var stagePt = exportRoot.localToGlobal(carInstance.x, carInstance.y);
 
     for (var i = 0; i < activeEnemies.length; i++) {
@@ -229,7 +212,6 @@ function killEnemy(enemy) {
     enemy._frame = 30;
     enemy.gotoAndStop(enemy._frame);
 
-    // Play death sound
     createjs.Sound.play("deathSound", { volume: SFX_VOLUME });
 }
 
@@ -241,4 +223,3 @@ function getEnemyDamage() {
     if (!enemyConfig) return 0;
     return activeEnemies.length * enemyConfig.base_stats.damage_per_enemy;
 }
-

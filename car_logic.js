@@ -1,13 +1,11 @@
 /**
  * ISEP Tycoon - Car Logic
- * Sistema de condução para o carro_mc com Áudio Suave e Baixo
  */
 
 var carInstance = null;
 var limiteInstance = null;
 var carOn = false;
 
-// Gestão de Sons
 var soundIds = {
     start: "carStart",
     stop: "carStop",
@@ -16,19 +14,17 @@ var soundIds = {
     horn: "carHorn"
 };
 
-// Volume Base
 var BASE_VOL = 0.01;
 var IDLE_VOL = 0.01;
 var MOVE_VOL = 0.01;
 
 var soundInstances = {
-    idleLoop1: null, // Sistema de duplo buffer para crossfade seria ideal,
-    idleLoop2: null, // mas complexo no SoundJS simples.
+    idleLoop1: null,
+    idleLoop2: null,
     currentLoop: null,
     accel: null
 };
 
-// Configurações do Carro
 var carStats = {
     speed: 0,
     maxSpeed: 8,
@@ -43,7 +39,7 @@ var currentAnimState = "none";
 var wasMoving = false;
 
 function initCar() {
-    console.log("[Car Logic] Inicializando V3 (Low Vol)...");
+    console.log("[Car] Initializing...");
 
     var sfxPath = "assets/sfx/car/";
     createjs.Sound.registerSound(sfxPath + "Car_Engine_Start_Up.ogg", soundIds.start);
@@ -91,7 +87,7 @@ function initCar() {
     window.addEventListener("keyup", handleCarKeyUp);
     createjs.Ticker.addEventListener("tick", updateCar);
 
-    console.log("[Car] Pronto. Sons a 20% volume.");
+    console.log("[Car] Ready");
 }
 
 function handleCarKeyDown(e) {
@@ -122,23 +118,19 @@ function playHorn() {
 
 function toggleCarEngine() {
     carOn = !carOn;
-    console.log("[Car] Motor:", carOn ? "ON" : "OFF");
+    console.log("[Car] Engine:", carOn ? "ON" : "OFF");
 
     if (carOn) {
-        // LIGAR
-        var startSound = createjs.Sound.play(soundIds.start, { volume: BASE_VOL });
+        createjs.Sound.play(soundIds.start, { volume: BASE_VOL });
 
         setTimeout(function () {
             if (carOn) {
-                // Inicia loop de motor com volume IDLE (muito baixo)
-                // Usamos loop: -1 que é o nativo do WebAudio, o mais smooth possível
                 soundInstances.currentLoop = createjs.Sound.play(soundIds.idle, { loop: -1, volume: IDLE_VOL });
                 setCarAnim("idle");
             }
         }, 1500);
 
     } else {
-        // DESLIGAR
         carStats.speed = 0;
         setCarAnim("off");
 
@@ -151,7 +143,7 @@ function toggleCarEngine() {
 
 function stopLoopSound() {
     if (soundInstances.currentLoop) {
-        // Fade out para parar suavemente em vez de cortar
+        // fade out instead of hard cut
         createjs.Tween.get(soundInstances.currentLoop, { override: true })
             .to({ volume: 0 }, 300)
             .call(function () { this.stop(); });
@@ -174,7 +166,7 @@ function updateCar(event) {
     if (!carInstance || (event && event.paused)) return;
     if (!carOn) return;
 
-    // --- FÍSICA ---
+    // physics
     if (keys.up) carStats.speed += carStats.acceleration;
     else if (keys.down) carStats.speed -= carStats.acceleration;
     else carStats.speed *= carStats.friction;
@@ -185,33 +177,29 @@ function updateCar(event) {
 
     var isMovingNow = (Math.abs(carStats.speed) > 0.5);
 
-    // --- ROTAÇÃO ---
+    // rotation
     if (isMovingNow) {
         var direction = carStats.speed > 0 ? 1 : -1;
         if (keys.left) carInstance.rotation -= carStats.rotationSpeed * direction;
         if (keys.right) carInstance.rotation += carStats.rotationSpeed * direction;
     }
 
-    // --- ÁUDIO SUAVE ---
-    // Transição Idle <-> Moving
+    // audio transitions
     if (isMovingNow && !wasMoving) {
-        // START MOVING
-        // Toca aceleração (camada extra)
-        soundInstances.accel = createjs.Sound.play(soundIds.accel, { volume: MOVE_VOL * 0.7 }); // layer auxiliar
+        // started moving
+        soundInstances.accel = createjs.Sound.play(soundIds.accel, { volume: MOVE_VOL * 0.7 });
 
-        // Sobe o loop principal
         if (soundInstances.currentLoop) {
             createjs.Tween.get(soundInstances.currentLoop, { override: true })
                 .to({ volume: MOVE_VOL }, 1200, createjs.Ease.quadOut);
         }
     }
     else if (!isMovingNow && wasMoving) {
-        // STOP MOVING
+        // stopped moving
         if (soundInstances.accel) {
             createjs.Tween.get(soundInstances.accel, { override: true }).to({ volume: 0 }, 300).call(function () { this.stop(); });
         }
 
-        // Desce o loop principal para idle
         if (soundInstances.currentLoop) {
             createjs.Tween.get(soundInstances.currentLoop, { override: true })
                 .to({ volume: IDLE_VOL }, 800, createjs.Ease.quadOut);
@@ -220,8 +208,7 @@ function updateCar(event) {
 
     wasMoving = isMovingNow;
 
-
-    // --- ANIMAÇÃO ---
+    // animation
     if (isMovingNow) {
         if (currentAnimState !== "moving") setCarAnim("moving");
         if (carInstance.currentFrame < 16 || carInstance.currentFrame > 37) carInstance.gotoAndPlay(16);
@@ -232,8 +219,7 @@ function updateCar(event) {
         else if (carInstance.currentFrame >= 15) carInstance.gotoAndPlay(2);
     }
 
-
-    // --- MOVIMENTO ---
+    // movement
     var angleRad = (carInstance.rotation + carStats.angleOffset) * (Math.PI / 180);
     var nextX = carInstance.x + Math.cos(angleRad) * carStats.speed;
     var nextY = carInstance.y + Math.sin(angleRad) * carStats.speed;
@@ -242,6 +228,7 @@ function updateCar(event) {
         carInstance.x = nextX;
         carInstance.y = nextY;
     } else {
+        // collision - slow down and try smaller step
         carStats.speed *= 0.3;
         var step = carStats.speed * 0.1;
         var sx = carInstance.x + Math.cos(angleRad) * step;
@@ -256,6 +243,7 @@ function updateCar(event) {
 function canMoveTo(nx, ny) {
     var stagePt = exportRoot.localToGlobal(nx, ny);
 
+    // check boundary
     if (limiteInstance) {
         var pt = limiteInstance.globalToLocal(stagePt.x, stagePt.y);
         if (limiteInstance.hitTest(pt.x, pt.y)) return false;
@@ -263,6 +251,7 @@ function canMoveTo(nx, ny) {
         if (nx < 0 || nx > 1920 || ny < 0 || ny > 1080) return false;
     }
 
+    // check buildings (skip parking lots)
     if (typeof buildingsData !== 'undefined' && buildingsData) {
         for (var id in buildingsData) {
             if (id.toLowerCase().includes("estacionamento")) continue;
@@ -275,5 +264,3 @@ function canMoveTo(nx, ny) {
     }
     return true;
 }
-
-// Nota: Lógica de inimigos movida para enemy_logic.js

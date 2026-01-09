@@ -1,37 +1,30 @@
 /**
  * ISEP Tycoon - Game Logic
- * Código JavaScript para Adobe Animate HTML5 Canvas (CreateJS)
  */
 
-// ============================================
-// CONFIGURAÇÃO GLOBAL
-// ============================================
+// -- Config --
 var GLOBAL_MULTIPLIER = 1.0;
-var INCOME_PER_STUDENT = 0.2; // Reduzido de 0.5 para tornar economia mais lenta
+var INCOME_PER_STUDENT = 0.2;
 var TICK_RATE = 1000;
-var STUDENT_UPDATE_INTERVAL = 5000; // 5 segundos para ganho/perda de alunos
+var STUDENT_UPDATE_INTERVAL = 5000;
 
-// ID da composição do Adobe Animate
 var COMP_ID = "C4EE32689A47AB45842BDB0D0E7EC980";
 
-// ============================================
-// ESTADO DO JOGO (GAME STATE)
-// ============================================
+// -- Game State --
 var gameState = {
     money: 1000,
     students: 0,
     sustainability: 0,
-    buildings: {} // Será preenchido com dados do JSON
+    buildings: {}
 };
 
-// Dados carregados do JSON
 var buildingsData = null;
 
-// Referências UI
+// UI refs
 var uiInstance = null;
 var upgradePanel = null;
 var alertPanel = null;
-var hoverInstance = null; // Instância do tooltip de hover
+var hoverInstance = null;
 var currentOpenBuildingId = null;
 var isHoveringLocked = false;
 
@@ -40,14 +33,14 @@ var lastStudentUpdateTime = 0;
 var currentStudentDelta = 0;
 var alunosInfoInstance = null;
 
-// Sistema de Auto-Save
+// Save system
 var SAVE_KEY = "isep_tycoon_save";
-var AUTO_SAVE_INTERVAL = 15000; // 15 segundos
+var AUTO_SAVE_INTERVAL = 15000;
 var autoSaveIntervalId = null;
 var isLoadingGame = false;
 var isHoveringUI = false;
 
-// Sistema de Soundtrack
+// Audio
 var soundtrackFiles = [
     "assets/soundtrack/Soundtrack_1.mp3",
     "assets/soundtrack/Soundtrack_2.mp3",
@@ -59,7 +52,6 @@ var SOUNDTRACK_VOLUME = 0.02;
 var SFX_VOLUME = 0.2;
 var themeSongStarted = false;
 
-// Helper para obter a library (lib) de forma robusta
 function getLib() {
     if (window.lib) return window.lib;
     if (typeof AdobeAn !== 'undefined') {
@@ -69,18 +61,16 @@ function getLib() {
     return null;
 }
 
-// ============================================
-// INICIALIZAÇÃO
-// ============================================
+// -- Init --
 var menuInstance = null;
 var gameStarted = false;
 
 function initGame() {
     console.log("========================================");
-    console.log("[ISEP Tycoon] A iniciar...");
+    console.log("[ISEP Tycoon] Starting...");
 
     if (typeof exportRoot === 'undefined' || exportRoot === null) {
-        console.error("[ISEP Tycoon] ERRO: exportRoot não definido!");
+        console.error("[ISEP Tycoon] exportRoot not defined!");
         return;
     }
 
@@ -88,16 +78,11 @@ function initGame() {
         window.stage.enableMouseOver(20);
     }
 
-    // Carregar Sons primeiro
     loadGameSounds();
 
-    // Carregar dados e depois mostrar menu
     loadBuildingsData(function () {
         initGameState();
-
-        // Parar todas as animações dos edifícios imediatamente
         stopAllBuildingAnimations();
-
         showMainMenu();
     });
 }
@@ -106,40 +91,34 @@ function showMainMenu() {
     menuInstance = findInstanceOnStage("menu_mc");
 
     if (!menuInstance) {
-        console.log("[Menu] menu_mc não encontrado, iniciando jogo diretamente");
+        console.log("[Menu] menu_mc not found, starting game directly");
         startGameAfterMenu();
         return;
     }
 
-    console.log("[Menu] Menu principal encontrado");
+    console.log("[Menu] Main menu found");
 
-    // Parar animação do jogo enquanto está no menu
     exportRoot.stop();
 
-    // Garantir que o menu está visível e no topo
     menuInstance.visible = true;
     menuInstance.alpha = 1;
     exportRoot.setChildIndex(menuInstance, exportRoot.numChildren - 1);
 
-    // Iniciar animação de intro (frames 0-57)
     menuInstance.gotoAndPlay(0);
 
-    // Configurar trigger para theme song (workaround para autoplay policy)
+    // browser autoplay workaround
     setupThemeSongTrigger();
 
-    // Verificar se há jogo guardado
     var savedGameExists = hasSavedGame();
-    console.log("[Menu] Jogo guardado encontrado:", savedGameExists);
+    console.log("[Menu] Save exists:", savedGameExists);
 
-    // Configurar botões
     var newGameBtn = menuInstance.new_game_btn;
     var continueBtn = menuInstance.continue_game_btn;
 
-    // Configurar botão Novo Jogo
     if (newGameBtn) {
         newGameBtn.tickEnabled = false;
         newGameBtn.paused = true;
-        newGameBtn.gotoAndStop(0); // Frame 1 = ativado
+        newGameBtn.gotoAndStop(0);
         newGameBtn.cursor = "pointer";
         newGameBtn.mouseChildren = false;
 
@@ -149,13 +128,12 @@ function showMainMenu() {
             if (!gameStarted) {
                 gameStarted = true;
                 isLoadingGame = false;
-                clearSavedGame(); // Limpar dados guardados ao iniciar novo jogo
+                clearSavedGame();
                 fadeOutMenu();
             }
         });
     }
 
-    // Configurar botão Continuar
     if (continueBtn) {
         continueBtn.tickEnabled = false;
         continueBtn.paused = true;
@@ -164,30 +142,27 @@ function showMainMenu() {
         if (continueBtn.text) continueBtn.text.text = "CONTINUAR";
 
         if (savedGameExists) {
-            // Ativar botão se há jogo guardado
-            continueBtn.gotoAndStop(0); // Frame 1 = ativado
+            continueBtn.gotoAndStop(0);
             continueBtn.cursor = "pointer";
             continueBtn.mouseEnabled = true;
 
             continueBtn.on("click", function () {
                 if (!gameStarted) {
                     gameStarted = true;
-                    isLoadingGame = true; // Marcar que estamos a carregar jogo
+                    isLoadingGame = true;
                     fadeOutMenu();
                 }
             });
         } else {
-            // Desativar botão se não há jogo guardado
-            continueBtn.gotoAndStop(1); // Frame 2 = desativado
+            continueBtn.gotoAndStop(1);
             continueBtn.cursor = "default";
             continueBtn.mouseEnabled = false;
         }
     }
 
-    // Listener para loop da animação do menu
     var buttonsConfigured = false;
     menuInstance.on("tick", function () {
-        // Reconfigurar botões quando aparecem no stage (frame 58+)
+        // reconfigure buttons when they appear (frame 58+)
         if (!buttonsConfigured && menuInstance.currentFrame >= 58) {
             buttonsConfigured = true;
 
@@ -203,12 +178,12 @@ function showMainMenu() {
             if (contBtn) {
                 contBtn.tickEnabled = false;
                 contBtn.paused = true;
-                // Manter o estado correto baseado em se há jogo guardado
                 contBtn.gotoAndStop(savedGameExists ? 0 : 1);
                 if (contBtn.text) contBtn.text.text = "CONTINUAR";
             }
         }
 
+        // menu animation loop
         if (menuInstance.currentFrame >= 57 && menuInstance.currentFrame < 58) {
             menuInstance.gotoAndPlay(58);
         } else if (menuInstance.currentFrame >= 114) {
@@ -223,9 +198,8 @@ function fadeOutMenu() {
         return;
     }
 
-    console.log("[Menu] Fade out...");
+    console.log("[Menu] Fading out...");
 
-    // Fade to black (diminuir alpha)
     createjs.Tween.get(menuInstance)
         .to({ alpha: 0 }, 1000, createjs.Ease.quadIn)
         .call(function () {
@@ -236,83 +210,57 @@ function fadeOutMenu() {
 }
 
 function startGameAfterMenu() {
-    console.log("[ISEP Tycoon] Iniciando jogo...");
+    console.log("[ISEP Tycoon] Starting game...");
 
-    // Carregar jogo guardado se estivermos a continuar
     if (isLoadingGame) {
         if (loadGame()) {
-            console.log("[ISEP Tycoon] Jogo carregado do localStorage.");
+            console.log("[ISEP Tycoon] Loaded from localStorage");
         } else {
-            console.log("[ISEP Tycoon] Falha ao carregar, iniciando novo jogo.");
+            console.log("[ISEP Tycoon] Load failed, starting fresh");
         }
     }
 
-    // 4. Configurar Painel de Alerta
     initAlertPanel();
-
-    // 5. Configurar Tooltip de Hover
     initHoverTooltip();
-
-    // 6. Configurar Painel de Upgrades
     initUpgradePanel();
-
-    // 7. Inicializar UI
     initUI();
-
-    // 8. Configurar Edifícios no Stage
     initBuildings();
 
-    // 8.1 Atualizar gráficos de todos os edifícios (importante para jogos carregados)
+    // update graphics for loaded games
     for (var id in gameState.buildings) {
         updateBuildingGraphics(id);
     }
 
-    // 9. Iniciar Loop de Economia
     startGameLoop();
-
-    // 10. Listener Global de Mouse para o Hover seguir o rato
     setupGlobalMouseMove();
 
-    // 11. Inicializar Carro
     if (window.initCar) initCar();
-
-    // 12. Inicializar Sistema de Inimigos
     if (window.initEnemySystem) initEnemySystem();
 
-    // 13. Iniciar Soundtrack
     initSoundtrack();
-
-    // 14. Iniciar Auto-Save
     startAutoSave();
 
-    console.log("[ISEP Tycoon] Jogo iniciado com sucesso!");
+    console.log("[ISEP Tycoon] Game started!");
 }
 
 function loadGameSounds() {
-    // SFX
     createjs.Sound.registerSound("assets/sfx/building_level_up.mp3", "levelUpSound");
     createjs.Sound.registerSound("assets/sfx/wrong.mp3", "wrongSound");
     createjs.Sound.registerSound("assets/sfx/death.mp3", "deathSound");
-
-    // Theme Song
     createjs.Sound.registerSound("assets/theme_song.mp3", "themeSong");
 
-    // Soundtrack
     for (var i = 0; i < soundtrackFiles.length; i++) {
         createjs.Sound.registerSound(soundtrackFiles[i], "soundtrack_" + i);
     }
 }
 
-/**
- * Configura um trigger para tocar a theme song na primeira interação do utilizador.
- * Workaround para a política de autoplay dos browsers (Chrome, Safari, etc.)
- */
+// plays theme on first user interaction (autoplay policy workaround)
 function setupThemeSongTrigger() {
     function startThemeSong() {
         if (themeSongStarted) return;
         themeSongStarted = true;
 
-        // Resume AudioContext se estiver suspenso (requisito Chrome/Safari)
+        // resume audio context if suspended
         if (createjs.WebAudioPlugin && createjs.WebAudioPlugin.context) {
             var ctx = createjs.WebAudioPlugin.context;
             if (ctx.state === 'suspended') {
@@ -320,27 +268,24 @@ function setupThemeSongTrigger() {
             }
         }
 
-        // Tocar theme song em loop
         createjs.Sound.play("themeSong", { volume: SOUNDTRACK_VOLUME, loop: -1 });
 
-        // Cleanup - remover listeners após primeiro trigger
         document.removeEventListener('click', startThemeSong);
         document.removeEventListener('keydown', startThemeSong);
         document.removeEventListener('touchstart', startThemeSong);
 
-        console.log("[ISEP Tycoon] Theme song iniciada após interação do utilizador.");
+        console.log("[ISEP Tycoon] Theme started");
     }
 
-    // Adicionar listeners para diferentes tipos de interação
     document.addEventListener('click', startThemeSong);
     document.addEventListener('keydown', startThemeSong);
     document.addEventListener('touchstart', startThemeSong);
 
-    console.log("[ISEP Tycoon] A aguardar interação do utilizador para iniciar theme song...");
+    console.log("[ISEP Tycoon] Waiting for user interaction to start theme...");
 }
 
 function initSoundtrack() {
-    // Começar com Soundtrack_1 após 10 segundos
+    // start first track after 10s
     setTimeout(function () {
         playTrack(0);
     }, 10000);
@@ -362,11 +307,10 @@ function playTrack(index) {
 }
 
 function scheduleNextTrack() {
-    // Delay random entre 1:30 (90s) e 3:00 (180s)
+    // random delay 1:30 to 3:00
     var delayMs = (90 + Math.random() * 90) * 1000;
 
     setTimeout(function () {
-        // Escolher track random que não seja a mesma
         var nextIndex;
         do {
             nextIndex = Math.floor(Math.random() * soundtrackFiles.length);
@@ -384,10 +328,10 @@ function loadBuildingsData(callback) {
         if (xhr.readyState == 4 && xhr.status == "200") {
             try {
                 buildingsData = JSON.parse(xhr.responseText);
-                console.log("[ISEP Tycoon] Dados carregados.");
+                console.log("[ISEP Tycoon] Data loaded");
                 if (callback) callback();
             } catch (e) {
-                console.error("[ISEP Tycoon] Erro no JSON: ", e);
+                console.error("[ISEP Tycoon] JSON error:", e);
             }
         }
     };
@@ -405,13 +349,8 @@ function initGameState() {
     }
 }
 
-// ============================================
-// SISTEMA DE SAVE/LOAD
-// ============================================
+// -- Save/Load --
 
-/**
- * Guarda o estado atual do jogo no localStorage
- */
 function saveGame() {
     try {
         var saveData = {
@@ -422,16 +361,12 @@ function saveGame() {
             timestamp: Date.now()
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-        console.log("[ISEP Tycoon] Jogo guardado automaticamente.");
+        console.log("[ISEP Tycoon] Auto-saved");
     } catch (e) {
-        console.error("[ISEP Tycoon] Erro ao guardar jogo:", e);
+        console.error("[ISEP Tycoon] Save error:", e);
     }
 }
 
-/**
- * Carrega o estado do jogo a partir do localStorage
- * @returns {boolean} true se carregou com sucesso, false caso contrário
- */
 function loadGame() {
     try {
         var saveData = localStorage.getItem(SAVE_KEY);
@@ -439,63 +374,47 @@ function loadGame() {
 
         var data = JSON.parse(saveData);
 
-        // Restaurar estado do jogo
         gameState.money = data.money || 1000;
         gameState.students = data.students || 0;
         gameState.sustainability = data.sustainability || 0;
 
-        // Restaurar estado dos edifícios
         for (var id in data.buildings) {
             if (gameState.buildings[id]) {
                 gameState.buildings[id] = data.buildings[id];
             }
         }
 
-        console.log("[ISEP Tycoon] Jogo carregado com sucesso.");
+        console.log("[ISEP Tycoon] Game loaded");
         return true;
     } catch (e) {
-        console.error("[ISEP Tycoon] Erro ao carregar jogo:", e);
+        console.error("[ISEP Tycoon] Load error:", e);
         return false;
     }
 }
 
-/**
- * Verifica se existe um jogo guardado no localStorage
- * @returns {boolean} true se existe, false caso contrário
- */
 function hasSavedGame() {
     try {
-        var saveData = localStorage.getItem(SAVE_KEY);
-        return saveData !== null;
+        return localStorage.getItem(SAVE_KEY) !== null;
     } catch (e) {
         return false;
     }
 }
 
-/**
- * Remove o jogo guardado do localStorage
- */
 function clearSavedGame() {
     try {
         localStorage.removeItem(SAVE_KEY);
-        console.log("[ISEP Tycoon] Dados guardados removidos.");
+        console.log("[ISEP Tycoon] Save cleared");
     } catch (e) {
-        console.error("[ISEP Tycoon] Erro ao remover dados guardados:", e);
+        console.error("[ISEP Tycoon] Clear error:", e);
     }
 }
 
-/**
- * Inicia o sistema de auto-save
- */
 function startAutoSave() {
     if (autoSaveIntervalId) clearInterval(autoSaveIntervalId);
     autoSaveIntervalId = setInterval(saveGame, AUTO_SAVE_INTERVAL);
-    console.log("[ISEP Tycoon] Auto-save iniciado (a cada " + (AUTO_SAVE_INTERVAL / 1000) + " segundos).");
+    console.log("[ISEP Tycoon] Auto-save started (every " + (AUTO_SAVE_INTERVAL / 1000) + "s)");
 }
 
-/**
- * Para o sistema de auto-save
- */
 function stopAutoSave() {
     if (autoSaveIntervalId) {
         clearInterval(autoSaveIntervalId);
@@ -518,9 +437,8 @@ function findInstanceOnStage(id) {
     return null;
 }
 
-// ============================================
-// UI & TOOLTIPS
-// ============================================
+// -- UI --
+
 function initUI() {
     uiInstance = findInstanceOnStage("ui_mc");
 
@@ -529,10 +447,9 @@ function initUI() {
         uiInstance.mouseChildren = true;
         uiInstance.cursor = "pointer";
 
-        // Encontrar alunos_info_mc
         alunosInfoInstance = uiInstance.instance;
 
-        // Fallback: procurar nos children
+        // fallback: search children
         if (!alunosInfoInstance && uiInstance.children) {
             for (var i = 0; i < uiInstance.children.length; i++) {
                 var child = uiInstance.children[i];
@@ -573,19 +490,17 @@ function initUI() {
 function updateAlunosInfo() {
     if (!alunosInfoInstance) return;
 
-    // Calcular valores actuais (não usar o cached)
     var studentGain = calculateStudentGain();
     var studentLoss = window.getEnemyDamage ? getEnemyDamage() : 0;
     var delta = studentGain - studentLoss;
 
-    // O Animate usa o mesmo campo student_gain_txt para ambos os frames
     if (delta >= 0) {
-        alunosInfoInstance.gotoAndStop(0); // Frame 1 = Gain (verde)
+        alunosInfoInstance.gotoAndStop(0);
         if (alunosInfoInstance.student_gain_txt) {
             alunosInfoInstance.student_gain_txt.text = "+" + delta;
         }
     } else {
-        alunosInfoInstance.gotoAndStop(1); // Frame 2 = Loss (vermelho)
+        alunosInfoInstance.gotoAndStop(1);
         if (alunosInfoInstance.student_gain_txt) {
             alunosInfoInstance.student_gain_txt.text = delta;
         }
@@ -597,7 +512,6 @@ function updateUI() {
     if (uiInstance.money_txt) uiInstance.money_txt.text = Math.floor(gameState.money) + "€";
     if (uiInstance.students_txt) uiInstance.students_txt.text = gameState.students + " Alunos";
 
-    // Calcular sustentabilidade dinamicamente
     gameState.sustainability = calculateSustainability();
     if (uiInstance.sustain_txt) uiInstance.sustain_txt.text = gameState.sustainability + "%";
 }
@@ -610,9 +524,8 @@ function calculateSustainability() {
         var data = buildingsData[id];
         var state = gameState.buildings[id];
 
-        // Só contar edifícios que têm upgrades de sustentabilidade
         if (data.sustain_upgrades && data.sustain_upgrades.length > 0) {
-            totalPossible += 3; // Máximo 3 níveis por edifício
+            totalPossible += 3;
             if (state && state.unlocked) {
                 totalAchieved += (state.sustain_level || 0);
             }
@@ -629,10 +542,8 @@ function initAlertPanel() {
         if (alertPanel && alertPanel.parent) alertPanel.parent.removeChild(alertPanel);
         alertPanel = new window.lib.alert_mc();
         alertPanel.name = "alertPanel";
-        // Posição inicial: Usando coordenadas sugeridas (Y negativo para esconder)
         alertPanel.x = 786.95;
         alertPanel.y = -100;
-
         exportRoot.addChild(alertPanel);
     }
 }
@@ -648,22 +559,18 @@ function initHoverTooltip() {
     }
 }
 
-/**
- * Listener global no Stage para o tooltip seguir o rato de forma fluída.
- */
+// tooltip follows mouse
 function setupGlobalMouseMove() {
     if (!window.stage) return;
 
     window.stage.on("stagemousemove", function (evt) {
         if (hoverInstance && hoverInstance.visible) {
-            // Converter posição do Stage para posição local dentro do exportRoot
             var localPt = exportRoot.globalToLocal(evt.stageX, evt.stageY);
 
-            // Aplicar coordenadas com o offset para alinhar a ponta da seta (X: 88.15, Y: 166.4)
+            // offset to align tooltip arrow
             hoverInstance.x = localPt.x - 88.15;
             hoverInstance.y = localPt.y - 166.4;
 
-            // Garantir que está sempre no topo
             exportRoot.setChildIndex(hoverInstance, exportRoot.numChildren - 1);
         }
     });
@@ -679,9 +586,8 @@ function showAlert() {
         .to({ y: -100 }, 500, createjs.Ease.cubicIn);
 }
 
-// ============================================
-// EDIFÍCIOS & INTERAÇÃO
-// ============================================
+// -- Buildings --
+
 function initBuildings() {
     for (var id in buildingsData) {
         var mc = findInstanceOnStage(id);
@@ -702,9 +608,6 @@ function setupBuildingInteraction(mc, id) {
     mc.buildingId = id;
     mc.cursor = "pointer";
     mc.mouseChildren = false;
-    mc.buildingId = id;
-    mc.cursor = "pointer";
-    mc.mouseChildren = false;
     updateBuildingGraphics(id);
 
     var brightnessFilter = new createjs.ColorMatrixFilter([
@@ -715,14 +618,11 @@ function setupBuildingInteraction(mc, id) {
     ]);
 
     mc.on("mouseover", function () {
-        // Desativar hover para estacionamentos já comprados
-        var isEstacionamento = id.toLowerCase().includes("estacionamento");
+        var isParking = id.toLowerCase().includes("estacionamento");
         var isUnlocked = gameState.buildings[id].unlocked;
 
-        if (isEstacionamento && isUnlocked) {
-            // Estacionamento comprado - sem efeito de hover
-            return;
-        }
+        // no hover effect for purchased parking
+        if (isParking && isUnlocked) return;
 
         mc.scaleX = mc.scaleY = 1.05;
         mc.alpha = 0.9;
@@ -760,11 +660,10 @@ function updateHoverData(id) {
 function handleBuildingClick(id, mc) {
     var bState = gameState.buildings[id];
     var bData = buildingsData[id];
+
     if (!bState.unlocked) {
         if (gameState.money >= bData.unlock_cost) {
             gameState.money -= bData.unlock_cost;
-            bState.unlocked = true;
-            if (bData.students_bonus) gameState.students += bData.students_bonus;
             bState.unlocked = true;
             if (bData.students_bonus) gameState.students += bData.students_bonus;
             updateBuildingGraphics(id);
@@ -775,14 +674,15 @@ function handleBuildingClick(id, mc) {
             showAlert();
         }
     } else {
-        var hasUpgrades = (bData.course_upgrades && bData.course_upgrades.length > 0) || (bData.infra_upgrades && bData.infra_upgrades.length > 0) || (bData.sustain_upgrades && bData.sustain_upgrades.length > 0);
+        var hasUpgrades = (bData.course_upgrades && bData.course_upgrades.length > 0) ||
+            (bData.infra_upgrades && bData.infra_upgrades.length > 0) ||
+            (bData.sustain_upgrades && bData.sustain_upgrades.length > 0);
         if (hasUpgrades) openUpgradePanel(id);
     }
 }
 
-// ============================================
-// LÓGICA DE UPGRADES
-// ============================================
+// -- Upgrades --
+
 function initUpgradePanel() {
     upgradePanel = findInstanceOnStage("upgrade_mc");
     if (!upgradePanel) return;
@@ -899,9 +799,7 @@ function buyUpgrade(type) {
         gameState.money -= cost;
         state[levelKey]++;
         if (upgradeInfo.students_bonus) gameState.students += upgradeInfo.students_bonus;
-        // Sustentabilidade é calculada dinamicamente, não acumulada
 
-        // Atualizar gráfico se foi upgrade de sustentabilidade
         if (type === "sustain") {
             updateBuildingGraphics(id);
         }
@@ -914,17 +812,9 @@ function buyUpgrade(type) {
     }
 }
 
-// ============================================
-// HELPERS GRÁFICOS
-// ============================================
-/**
- * Atualiza o frame do edifício com base no estado e nível de sustentabilidade.
- * Frame 0: Bloqueado
- * Frame 1: Desbloqueado (Base / Sustentabilidade 0)
- * Frame 2: Sustentabilidade 1
- * Frame 3: Sustentabilidade 2
- * Frame 4: Sustentabilidade 3
- */
+// -- Graphics --
+
+// frame 0 = locked, frame 1 = unlocked, frames 2-4 = sustainability levels
 function updateBuildingGraphics(id) {
     var mc = findInstanceOnStage(id);
     if (!mc) return;
@@ -932,20 +822,15 @@ function updateBuildingGraphics(id) {
     var state = gameState.buildings[id];
 
     if (!state.unlocked) {
-        mc.gotoAndStop(0); // Frame 1 (Bloqueado)
+        mc.gotoAndStop(0);
     } else {
-        // Frame 2 (Base) + Nível de Sustentabilidade (0 a 3)
         var frameIndex = 1 + (state.sustain_level || 0);
         mc.gotoAndStop(frameIndex);
     }
 }
 
-/**
- * Para todas as animações do jogo no frame 0
- * Chamado imediatamente quando o jogo carrega, antes do menu
- */
+// freezes all animations before menu shows
 function stopAllBuildingAnimations() {
-    // Parar edifícios
     for (var id in buildingsData) {
         var mc = findInstanceOnStage(id);
         if (mc) {
@@ -954,37 +839,31 @@ function stopAllBuildingAnimations() {
         }
     }
 
-    // Parar UI
     var uiMc = findInstanceOnStage("ui_mc");
     if (uiMc) {
         uiMc.stop();
         uiMc.gotoAndStop(0);
     }
 
-    // Parar e esconder painel de upgrades
     var upgradeMc = findInstanceOnStage("upgrade_mc");
     if (upgradeMc) {
         upgradeMc.stop();
         upgradeMc.gotoAndStop(0);
-        upgradeMc.x = -800; // Esconder fora do ecrã
+        upgradeMc.x = -800;
     }
 
-    console.log("[ISEP Tycoon] Todas as animações paradas");
+    console.log("[ISEP Tycoon] Animations stopped");
 }
 
-// ============================================
-// ECONOMIA (GAME LOOP)
-// ============================================
+// -- Economy --
+
 function startGameLoop() {
     if (gameTickInterval) clearInterval(gameTickInterval);
     gameTickInterval = setInterval(gameTick, TICK_RATE);
 }
 
 function gameTick() {
-    // NOTA: updateEnemies agora corre no Ticker, não aqui
-
-
-    // Dinheiro (cada tick)
+    // income per tick
     var income = gameState.students * INCOME_PER_STUDENT;
     var maintenanceFactor = 1 - (gameState.sustainability / 100);
     var maintenanceCost = (gameState.students * 0.1) * maintenanceFactor;
@@ -993,15 +872,12 @@ function gameTick() {
         gameState.money += profit;
     }
 
-    // Alunos (cada 5 segundos)
+    // students every 5s
     var now = Date.now();
     if (now - lastStudentUpdateTime >= STUDENT_UPDATE_INTERVAL) {
         lastStudentUpdateTime = now;
 
-        // Calcular ganho de alunos base
         var studentGain = calculateStudentGain();
-
-        // Calcular perda por inimigos
         var studentLoss = 0;
         if (window.getEnemyDamage) studentLoss = getEnemyDamage();
 
@@ -1010,7 +886,6 @@ function gameTick() {
 
         if (gameState.students < 0) gameState.students = 0;
 
-        // Game Over check
         if (gameState.students <= 0 && window.getActiveEnemyCount && getActiveEnemyCount() > 0) {
             gameOver();
         }
@@ -1018,7 +893,6 @@ function gameTick() {
 
     updateUI();
 
-    // Atualizar info de alunos se estiver em hover
     if (isHoveringUI) {
         updateAlunosInfo();
     }
@@ -1029,9 +903,9 @@ function calculateStudentGain() {
     for (var id in gameState.buildings) {
         var b = gameState.buildings[id];
         if (b.unlocked) {
-            gain += 0.5; // Reduzido de 1 para 0.5 por edifício
-            gain += (b.course_level || 0) * 0.2; // Reduzido de 0.5
-            gain += (b.infra_level || 0) * 0.1; // Reduzido de 0.3
+            gain += 0.5;
+            gain += (b.course_level || 0) * 0.2;
+            gain += (b.infra_level || 0) * 0.1;
         }
     }
     return Math.floor(gain);
@@ -1039,8 +913,8 @@ function calculateStudentGain() {
 
 function gameOver() {
     clearInterval(gameTickInterval);
-    stopAutoSave(); // Parar auto-save
-    clearSavedGame(); // Limpar dados guardados ao perder
+    stopAutoSave();
+    clearSavedGame();
     alert("GAME OVER! Os estudantes abandonaram o ISEP devido à praxe descontrolada!");
     location.reload();
 }
