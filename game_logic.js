@@ -57,6 +57,7 @@ var lastPlayedTrack = -1;
 var soundtrackInstance = null;
 var SOUNDTRACK_VOLUME = 0.02;
 var SFX_VOLUME = 0.2;
+var themeSongStarted = false;
 
 // Helper para obter a library (lib) de forma robusta
 function getLib() {
@@ -123,8 +124,8 @@ function showMainMenu() {
     // Iniciar animação de intro (frames 0-57)
     menuInstance.gotoAndPlay(0);
 
-    // Tocar theme song quando o menu abre
-    createjs.Sound.play("themeSong", { volume: SOUNDTRACK_VOLUME, loop: -1 });
+    // Configurar trigger para theme song (workaround para autoplay policy)
+    setupThemeSongTrigger();
 
     // Verificar se há jogo guardado
     var savedGameExists = hasSavedGame();
@@ -291,6 +292,7 @@ function loadGameSounds() {
     // SFX
     createjs.Sound.registerSound("assets/sfx/building_level_up.mp3", "levelUpSound");
     createjs.Sound.registerSound("assets/sfx/wrong.mp3", "wrongSound");
+    createjs.Sound.registerSound("assets/sfx/death.mp3", "deathSound");
 
     // Theme Song
     createjs.Sound.registerSound("assets/theme_song.mp3", "themeSong");
@@ -299,6 +301,42 @@ function loadGameSounds() {
     for (var i = 0; i < soundtrackFiles.length; i++) {
         createjs.Sound.registerSound(soundtrackFiles[i], "soundtrack_" + i);
     }
+}
+
+/**
+ * Configura um trigger para tocar a theme song na primeira interação do utilizador.
+ * Workaround para a política de autoplay dos browsers (Chrome, Safari, etc.)
+ */
+function setupThemeSongTrigger() {
+    function startThemeSong() {
+        if (themeSongStarted) return;
+        themeSongStarted = true;
+
+        // Resume AudioContext se estiver suspenso (requisito Chrome/Safari)
+        if (createjs.WebAudioPlugin && createjs.WebAudioPlugin.context) {
+            var ctx = createjs.WebAudioPlugin.context;
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+        }
+
+        // Tocar theme song em loop
+        createjs.Sound.play("themeSong", { volume: SOUNDTRACK_VOLUME, loop: -1 });
+
+        // Cleanup - remover listeners após primeiro trigger
+        document.removeEventListener('click', startThemeSong);
+        document.removeEventListener('keydown', startThemeSong);
+        document.removeEventListener('touchstart', startThemeSong);
+
+        console.log("[ISEP Tycoon] Theme song iniciada após interação do utilizador.");
+    }
+
+    // Adicionar listeners para diferentes tipos de interação
+    document.addEventListener('click', startThemeSong);
+    document.addEventListener('keydown', startThemeSong);
+    document.addEventListener('touchstart', startThemeSong);
+
+    console.log("[ISEP Tycoon] A aguardar interação do utilizador para iniciar theme song...");
 }
 
 function initSoundtrack() {

@@ -228,6 +228,9 @@ function killEnemy(enemy) {
     enemy._state = "dying";
     enemy._frame = 30;
     enemy.gotoAndStop(enemy._frame);
+
+    // Play death sound
+    createjs.Sound.play("deathSound", { volume: SFX_VOLUME });
 }
 
 function getActiveEnemyCount() {
